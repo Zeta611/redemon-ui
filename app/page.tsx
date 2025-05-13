@@ -3,6 +3,9 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
+import TimelinePane from "@/components/TimelinePane";
+import SketchPane from "@/components/SketchPane";
+import SynthPane from "@/components/SynthPane";
 
 export default function Home() {
   return (
@@ -10,43 +13,17 @@ export default function Home() {
       <ResizablePanel>
         <ResizablePanelGroup direction="horizontal">
           <ResizablePanel>
-            <ResizablePanelGroup direction="vertical">
-              <ResizablePanel defaultSize={60}>
-                <div className="flex h-full items-center justify-center p-6">
-                  <span className="font-semibold">User View</span>
-                </div>
-              </ResizablePanel>
-              <ResizableHandle withHandle={false} />
-              <ResizablePanel>
-                <div className="flex h-full items-center justify-center p-6">
-                  <span className="font-semibold">Demo</span>
-                </div>
-              </ResizablePanel>
-            </ResizablePanelGroup>
+            <SketchPane />
           </ResizablePanel>
           <ResizableHandle withHandle />
           <ResizablePanel>
-            <ResizablePanelGroup direction="vertical">
-              <ResizablePanel defaultSize={60}>
-                <div className="flex h-full items-center justify-center p-6">
-                  <span className="font-semibold">Synth Code</span>
-                </div>
-              </ResizablePanel>
-              <ResizableHandle withHandle={false} />
-              <ResizablePanel>
-                <div className="flex h-full items-center justify-center p-6">
-                  <span className="font-semibold">Synth UI</span>
-                </div>
-              </ResizablePanel>
-            </ResizablePanelGroup>
+            <SynthPane />
           </ResizablePanel>
         </ResizablePanelGroup>
       </ResizablePanel>
       <ResizableHandle withHandle />
       <ResizablePanel defaultSize={20}>
-        <div className="flex h-full items-center justify-center p-6">
-          <span className="font-semibold">Timeline</span>
-        </div>
+        <TimelinePane />
       </ResizablePanel>
     </ResizablePanelGroup>
   );
