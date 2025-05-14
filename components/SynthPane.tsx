@@ -7,10 +7,11 @@ import {
 import { LivePreview, LiveProvider } from "react-live";
 import SynthEditor from "@/components/SynthEditor";
 import { Separator } from "@/components/ui/separator";
+import { useState } from "react";
 
 // TODO: Remove sample
 const sample = `function Counter() {
-  const [count, setCount] = React.useState(0);
+  const [count, setCount] = useState(0);
   return (
     <div className="flex flex-col items-center">
       <span className="font-semibold text-lg">
@@ -31,10 +32,10 @@ render(<Counter />);
 
 export default function SynthPane() {
   return (
-    <LiveProvider code={sample} noInline>
+    <LiveProvider code={sample} scope={{ useState }} noInline>
       <ResizablePanelGroup direction="vertical">
         <ResizablePanel defaultSize={60}>
-          <span className="font-normal text-sm px-2">Synthesized</span>
+          <span className="font-normal text-sm px-2">🤖 Synthesized</span>
           <Separator />
           <SynthEditor />
         </ResizablePanel>
