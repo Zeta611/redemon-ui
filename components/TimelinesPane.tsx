@@ -1,10 +1,11 @@
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
+import { type Timeline as TimelineType } from "./Timeline";
 import Timeline from "./Timeline";
 
 type TimelinesPaneProps = {
-  timelines: number[][];
+  timelines: TimelineType[];
   addTimeline: () => void;
   removeTimeline: (index: number) => void;
   workingTimeline: number | null;

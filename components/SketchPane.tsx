@@ -7,6 +7,7 @@ import {
 import { LivePreview, LiveProvider } from "react-live";
 import SketchEditor from "@/components/SketchEditor";
 import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
 import { useState } from "react";
 
 const sample = `<div className="flex flex-col items-center">
@@ -28,18 +29,24 @@ function replaceHoles(code: string) {
 
 type SketchPaneProps = {
   addAction: (hole: number) => void;
+  addSketch: (sketch: string) => void;
 };
 
-export default function SketchPane({ addAction }: SketchPaneProps) {
+export default function SketchPane({ addAction, addSketch }: SketchPaneProps) {
   const [code, setCode] = useState(sample);
 
   return (
     <LiveProvider code={replaceHoles(code)} scope={{ addAction }}>
       <ResizablePanelGroup direction="vertical">
         <ResizablePanel defaultSize={60}>
-          <span className="font-normal text-sm px-2">🎨 Sketch</span>
-          <Separator />
-          <SketchEditor code={code} setCodeAction={setCode} />
+          <div className="flex flex-col h-full">
+            <span className="font-normal text-sm px-2">🎨 Sketch</span>
+            <Separator />
+            <SketchEditor code={code} setCodeAction={setCode} />
+            <Button className="bg-stone-800 text-sm" onClick={() => addSketch(code)}>
+              📸 Capture
+            </Button>
+          </div>
         </ResizablePanel>
         <ResizableHandle withHandle={false} />
         <ResizablePanel>

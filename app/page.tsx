@@ -8,9 +8,10 @@ import { useState } from "react";
 import TimelinePanes from "@/components/TimelinesPane";
 import SketchPane from "@/components/SketchPane";
 import SynthPane from "@/components/SynthPane";
+import { type Timeline } from "@/components/Timeline";
 
 export default function Home() {
-  const [timelines, setTimelines] = useState<number[][]>([[]]);
+  const [timelines, setTimelines] = useState<Timeline[]>([[]]);
   const [workingTimeline, setWorkingTimeline] = useState<number | null>(0);
 
   function removeTimeline(index: number) {
@@ -28,7 +29,17 @@ export default function Home() {
     setTimelines(
       timelines.map((timeline, i) => {
         if (i === index) {
-          return [...timeline, action];
+          return [...timeline, { kind: "Action", action }];
+        }
+        return timeline;
+      }),
+    );
+  }
+  function addSketchToTimeline(index: number, sketch: string) {
+    setTimelines(
+      timelines.map((timeline, i) => {
+        if (i === index) {
+          return [...timeline, { kind: "Sketch", sketch }];
         }
         return timeline;
       }),
@@ -46,6 +57,10 @@ export default function Home() {
               addAction={(hole) => {
                 if (workingTimeline !== null)
                   addActionToTimeline(workingTimeline, hole);
+              }}
+              addSketch={(sketch) => {
+                if (workingTimeline !== null)
+                  addSketchToTimeline(workingTimeline, sketch);
               }}
             />
           </ResizablePanel>
