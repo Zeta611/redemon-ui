@@ -71,7 +71,12 @@ export default function Home() {
         </ResizablePanelGroup>
       </ResizablePanel>
       <ResizableHandle withHandle />
-      <ResizablePanel className="!overflow-y-auto" defaultSize={20}>
+      <ResizablePanel
+        defaultSize={25}
+        minSize={25}
+        collapsible
+        collapsedSize={2}
+      >
         <TimelinePanes
           timelines={timelines}
           addTimeline={addTimeline}
