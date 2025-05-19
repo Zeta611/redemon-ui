@@ -58,7 +58,7 @@ export default function Home() {
                 if (workingTimeline !== null)
                   addActionToTimeline(workingTimeline, hole);
               }}
-              addSketch={(sketch) => {
+              addSketchAction={(sketch) => {
                 if (workingTimeline !== null)
                   addSketchToTimeline(workingTimeline, sketch);
               }}

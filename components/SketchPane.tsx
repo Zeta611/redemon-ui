@@ -29,10 +29,13 @@ function replaceHoles(code: string) {
 
 type SketchPaneProps = {
   addAction: (hole: number) => void;
-  addSketch: (sketch: string) => void;
+  addSketchAction: (sketch: string) => void;
 };
 
-export default function SketchPane({ addAction, addSketch }: SketchPaneProps) {
+export default function SketchPane({
+  addAction,
+  addSketchAction,
+}: SketchPaneProps) {
   const [code, setCode] = useState(sample);
 
   return (
@@ -43,7 +46,10 @@ export default function SketchPane({ addAction, addSketch }: SketchPaneProps) {
             <span className="font-normal text-sm px-2">🎨 Sketch</span>
             <Separator />
             <SketchEditor code={code} setCodeAction={setCode} />
-            <Button className="bg-stone-800 text-sm" onClick={() => addSketch(code)}>
+            <Button
+              className="bg-stone-800 text-sm"
+              onClick={() => addSketchAction(code)}
+            >
               📸 Capture
             </Button>
           </div>
