@@ -9,6 +9,7 @@ import SketchEditor from "@/components/SketchEditor";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { parse } from "@/shared/lang.res.mjs";
 
 const sample = `<div className="flex flex-col items-center">
   <span className="font-semibold text-lg">
@@ -37,6 +38,12 @@ export default function SketchPane({
   addSketchAction,
 }: SketchPaneProps) {
   const [code, setCode] = useState(sample);
+
+  try {
+    console.log(parse(code));
+  } catch (e) {
+    console.error(e);
+  }
 
   return (
     <LiveProvider code={replaceHoles(code)} scope={{ addAction }}>
