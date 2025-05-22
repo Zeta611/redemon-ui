@@ -31,7 +31,7 @@ export default function Timeline({
   return (
     <div
       className={cn(
-        "flex p-1 gap-2 border-3 rounded-lg shadow-sm h-12 items-center",
+        "flex h-12 items-center gap-2 rounded-lg border-3 p-1 shadow-sm",
         isWorking ? "border-red-400" : "border-stone-300",
       )}
       onClick={setIsWorking}
@@ -40,14 +40,14 @@ export default function Timeline({
         item.kind === "Action" ? (
           <span
             key={index}
-            className="bg-amber-500 border-3 border-amber-700 p-1 rounded-lg"
+            className="rounded-lg border-3 border-amber-700 bg-amber-500 p-1"
           >
             👆
           </span>
         ) : (
           <span
             key={index}
-            className="bg-fuchsia-600 border-3 border-fuchsia-800 p-1 rounded-md"
+            className="rounded-md border-3 border-fuchsia-800 bg-fuchsia-600 p-1"
           >
             🎨
           </span>

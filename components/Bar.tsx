@@ -16,10 +16,10 @@ export default function Bar() {
     <div className="flex items-end gap-5">
       <Link
         href="/"
-        className="text-lg lg:text-xl font-bold [font-variant:small-caps]"
+        className="text-lg font-bold [font-variant:small-caps] lg:text-xl"
       >
         <span>ReDemon</span>
-        <span className="border-2 rounded px-0.5 ml-1 text-base lg:text-lg">
+        <span className="ml-1 rounded border-2 px-0.5 text-base lg:text-lg">
           ui
         </span>
       </Link>

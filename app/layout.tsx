@@ -27,9 +27,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col h-screen w-screen`}
+        className={`${geistSans.variable} ${geistMono.variable} flex h-screen w-screen flex-col antialiased`}
       >
-        <div className="py-2 px-3">
+        <div className="px-3 py-2">
           <Bar />
         </div>
         <Separator />

@@ -49,13 +49,13 @@ export default function SketchPane({
     <LiveProvider code={replaceHoles(code)} scope={{ addAction }}>
       <ResizablePanelGroup direction="vertical">
         <ResizablePanel defaultSize={60} minSize={30}>
-          <div className="flex flex-col h-full">
-            <span className="font-normal text-sm px-2">🎨 Sketch</span>
+          <div className="flex h-full flex-col">
+            <span className="px-2 text-sm font-normal">🎨 Sketch</span>
             <Separator />
             <SketchEditor code={code} setCodeAction={setCode} />
             <div className="relative">
               <Button
-                className="bg-stone-800 text-sm absolute bottom-2 right-2"
+                className="absolute right-2 bottom-2 bg-stone-800 text-sm"
                 onClick={() => addSketchAction(code)}
               >
                 📸 Capture

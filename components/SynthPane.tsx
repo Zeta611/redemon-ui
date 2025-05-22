@@ -35,7 +35,7 @@ export default function SynthPane() {
     <LiveProvider code={sample} scope={{ useState }} noInline>
       <ResizablePanelGroup direction="vertical">
         <ResizablePanel defaultSize={60} minSize={30}>
-          <span className="font-normal text-sm px-2">🤖 Synthesized</span>
+          <span className="px-2 text-sm font-normal">🤖 Synthesized</span>
           <Separator />
           <SynthEditor />
         </ResizablePanel>
