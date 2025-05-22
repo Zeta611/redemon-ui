@@ -6,9 +6,14 @@ import {
 } from "@/components/ui/resizable";
 import { useState } from "react";
 import TimelinePanes from "@/components/TimelinesPane";
-import SketchPane from "@/components/SketchPane";
+// import SketchPane from "@/components/SketchPane";
 import SynthPane from "@/components/SynthPane";
 import { type Timeline } from "@/components/Timeline";
+import dynamic from "next/dynamic";
+
+const SketchPane = dynamic(() => import("@/components/SketchPane"), {
+  ssr: false,
+});
 
 export default function Home() {
   const [timelines, setTimelines] = useState<Timeline[]>([[]]);
