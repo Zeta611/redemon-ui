@@ -49,6 +49,11 @@
     "tw-animate-css": "^1.2.9",
     "typescript": "^5"
   },
+  "overrides": {
+    "@rescript/core": {
+      "rescript": "$rescript"
+    }
+  },
   "browser": {
     "fs": false,
     "child_process": false
