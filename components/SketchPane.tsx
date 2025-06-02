@@ -10,15 +10,13 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { useRef, useState } from "react";
 import { parse } from "@/shared/lang.res.mjs";
-import prettier from "prettier/standalone";
-import prettierPluginBabel from "prettier/plugins/babel";
-import prettierPluginEstree from "prettier/plugins/estree";
 import { ReactCodeMirrorRef } from "@uiw/react-codemirror";
 import {
   Tooltip,
   TooltipTrigger,
   TooltipContent,
 } from "@/components/ui/tooltip";
+import { format, replaceHoles } from "@/shared/sketch";
 
 const sample = `<div className="flex flex-col items-center">
   <span className="font-semibold text-lg">
@@ -26,16 +24,12 @@ const sample = `<div className="flex flex-col items-center">
   </span>
   <button
     className="bg-stone-500 text-white px-2 py-1 rounded"
-    onClick={$}
+    onClick={$1}
   >
     Increment
   </button>
 </div>
 `;
-
-function replaceHoles(code: string) {
-  return code.replaceAll("$", "() => { addAction(1); }");
-}
 
 type SketchPaneProps = {
   addAction: (hole: number) => void;
@@ -46,29 +40,19 @@ export default function SketchPane({
   addAction,
   addSketchAction,
 }: SketchPaneProps) {
-  const [code, setCode] = useState(sample);
+  const [sketch, setSketch] = useState(sample);
 
+  // TODO: Remove if not needed
   const codeMirrorRef = useRef<ReactCodeMirrorRef>(null);
-  async function formatAndSetCode(code: string) {
-    const view = codeMirrorRef.current?.view;
-    if (!view) return;
-
-    console.log(view.state.selection.main.head);
-    const formatted = await prettier.format(code, {
-      parser: "babel",
-      plugins: [prettierPluginBabel, prettierPluginEstree],
-    });
-    setCode(formatted);
-  }
 
   try {
-    console.log(parse(code));
+    console.log(parse(sketch));
   } catch (e) {
     console.error(e);
   }
 
   return (
-    <LiveProvider code={replaceHoles(code)} scope={{ addAction }}>
+    <LiveProvider code={replaceHoles(sketch)} scope={{ addAction }}>
       <ResizablePanelGroup direction="vertical">
         <ResizablePanel defaultSize={60} minSize={30}>
           <div className="flex h-full flex-col">
@@ -80,20 +64,20 @@ export default function SketchPane({
                     variant="ghost"
                     size="icon"
                     className="size-5"
-                    onClick={() => formatAndSetCode(code)}
+                    onClick={async () => setSketch(await format(sketch))}
                   >
                     🖌️
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Format code</p>
+                  <p>Format</p>
                 </TooltipContent>
               </Tooltip>
             </div>
             <Separator />
             <SketchEditor
-              code={code}
-              setCodeAction={setCode}
+              sketch={sketch}
+              setSketchAction={setSketch}
               codeMirrorRef={codeMirrorRef}
             />
             <div className="relative">
@@ -101,7 +85,7 @@ export default function SketchPane({
                 <TooltipTrigger asChild>
                   <Button
                     className="absolute right-2 bottom-2 bg-stone-800 text-sm"
-                    onClick={() => addSketchAction(code)}
+                    onClick={() => addSketchAction(sketch)}
                   >
                     📸 Capture
                   </Button>

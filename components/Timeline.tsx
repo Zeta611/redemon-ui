@@ -42,7 +42,7 @@ export default function Timeline({
             key={index}
             className="rounded-lg border-3 border-amber-700 bg-amber-500 p-1"
           >
-            👆
+            👆 {item.action}
           </span>
         ) : (
           <span

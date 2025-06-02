@@ -2,25 +2,30 @@
 import CodeMirror, { ReactCodeMirrorRef } from "@uiw/react-codemirror";
 import { javascript } from "@codemirror/lang-javascript";
 import { editPlugin } from "@/shared/sketch-plugin";
+import { EditorView } from "@codemirror/view";
 import { RefObject } from "react";
 
 type SketchEditorProps = {
-  code: string;
-  setCodeAction: (code: string) => void;
+  sketch: string;
+  setSketchAction: (code: string) => void;
   codeMirrorRef: RefObject<ReactCodeMirrorRef | null>;
 };
 
 export default function SketchEditor({
-  code,
-  setCodeAction,
+  sketch,
+  setSketchAction,
   codeMirrorRef,
 }: SketchEditorProps) {
   return (
     <CodeMirror
       ref={codeMirrorRef}
-      value={code}
-      extensions={[javascript({ jsx: true }), editPlugin]}
-      onChange={setCodeAction}
+      value={sketch}
+      extensions={[
+        javascript({ jsx: true }),
+        EditorView.lineWrapping,
+        editPlugin,
+      ]}
+      onChange={setSketchAction}
       height="100%"
       className="h-full"
     />

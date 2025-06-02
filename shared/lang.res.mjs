@@ -7,22 +7,16 @@ import * as Belt_Option from "rescript/lib/es6/Belt_Option.js";
 import * as LangBcJs from "./lang.bc.js";
 
 function const_encode(v) {
-  switch (v.TAG) {
-    case "String" :
-      return [
-        "String",
-        Spice.stringToJson(v._0)
-      ];
-    case "Int" :
-      return [
-        "Int",
-        Spice.intToJson(v._0)
-      ];
-    case "Bool" :
-      return [
-        "Bool",
-        Spice.boolToJson(v._0)
-      ];
+  if (v.TAG === "String") {
+    return [
+      "String",
+      Spice.stringToJson(v._0)
+    ];
+  } else {
+    return [
+      "Int",
+      Spice.intToJson(v._0)
+    ];
   }
 }
 
@@ -36,16 +30,16 @@ function const_decode(v) {
   let match = Belt_Array.getExn(v, 0);
   if (typeof match === "string") {
     switch (match) {
-      case "Bool" :
+      case "Int" :
         if (v.length !== 2) {
           return Spice.error(undefined, "Invalid number of arguments to variant constructor", v);
         }
-        let v0 = Spice.boolFromJson(Belt_Array.getExn(v, 1));
+        let v0 = Spice.intFromJson(Belt_Array.getExn(v, 1));
         if (v0.TAG === "Ok") {
           return {
             TAG: "Ok",
             _0: {
-              TAG: "Bool",
+              TAG: "Int",
               _0: v0._0
             }
           };
@@ -59,16 +53,16 @@ function const_decode(v) {
             value: e.value
           }
         };
-      case "Int" :
+      case "String" :
         if (v.length !== 2) {
           return Spice.error(undefined, "Invalid number of arguments to variant constructor", v);
         }
-        let v0$1 = Spice.intFromJson(Belt_Array.getExn(v, 1));
+        let v0$1 = Spice.stringFromJson(Belt_Array.getExn(v, 1));
         if (v0$1.TAG === "Ok") {
           return {
             TAG: "Ok",
             _0: {
-              TAG: "Int",
+              TAG: "String",
               _0: v0$1._0
             }
           };
@@ -82,41 +76,25 @@ function const_decode(v) {
             value: e$1.value
           }
         };
-      case "String" :
-        if (v.length !== 2) {
-          return Spice.error(undefined, "Invalid number of arguments to variant constructor", v);
-        }
-        let v0$2 = Spice.stringFromJson(Belt_Array.getExn(v, 1));
-        if (v0$2.TAG === "Ok") {
-          return {
-            TAG: "Ok",
-            _0: {
-              TAG: "String",
-              _0: v0$2._0
-            }
-          };
-        }
-        let e$2 = v0$2._0;
-        return {
-          TAG: "Error",
-          _0: {
-            path: "[0]" + e$2.path,
-            message: e$2.message,
-            value: e$2.value
-          }
-        };
     }
   }
   return Spice.error(undefined, "Invalid variant constructor", Belt_Array.getExn(v, 0));
 }
 
+let label_encode = Spice.intToJson;
+
+let label_decode = Spice.intFromJson;
+
 function attr_value_encode(v) {
-  if (typeof v !== "object") {
-    return ["AttrFunc"];
-  } else {
+  if (v.TAG === "AttrConst") {
     return [
       "AttrConst",
       const_encode(v._0)
+    ];
+  } else {
+    return [
+      "AttrFunc",
+      Spice.intToJson(v._0)
     ];
   }
 }
@@ -155,14 +133,28 @@ function attr_value_decode(v) {
           }
         };
       case "AttrFunc" :
-        if (v.length !== 1) {
+        if (v.length !== 2) {
           return Spice.error(undefined, "Invalid number of arguments to variant constructor", v);
-        } else {
+        }
+        let v0$1 = Spice.intFromJson(Belt_Array.getExn(v, 1));
+        if (v0$1.TAG === "Ok") {
           return {
             TAG: "Ok",
-            _0: "AttrFunc"
+            _0: {
+              TAG: "AttrFunc",
+              _0: v0$1._0
+            }
           };
         }
+        let e$1 = v0$1._0;
+        return {
+          TAG: "Error",
+          _0: {
+            path: "[0]" + e$1.path,
+            message: e$1.message,
+            value: e$1.value
+          }
+        };
     }
   }
   return Spice.error(undefined, "Invalid variant constructor", Belt_Array.getExn(v, 0));
@@ -344,6 +336,8 @@ function parse(prog) {
 export {
   const_encode,
   const_decode,
+  label_encode,
+  label_decode,
   attr_value_encode,
   attr_value_decode,
   tree_encode,

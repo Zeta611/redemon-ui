@@ -2,10 +2,12 @@
 type const =
   | String(string)
   | Int(int)
-  | Bool(bool)
 
 @spice
-type attr_value = AttrConst(const) | AttrFunc
+type label = int
+
+@spice
+type attr_value = AttrConst(const) | AttrFunc(label)
 
 @spice
 type rec tree =

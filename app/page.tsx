@@ -26,10 +26,12 @@ export default function Home() {
       setWorkingTimeline(null);
     }
   }
+
   function addTimeline() {
     setTimelines([...timelines, []]);
     setWorkingTimeline(timelines.length);
   }
+
   function addActionToTimeline(index: number, action: number) {
     setTimelines(
       timelines.map((timeline, i) => {
@@ -40,6 +42,7 @@ export default function Home() {
       }),
     );
   }
+
   function addSketchToTimeline(index: number, sketch: string) {
     setTimelines(
       timelines.map((timeline, i) => {
@@ -51,6 +54,18 @@ export default function Home() {
     );
   }
 
+  function addAction(hole: number) {
+    if (workingTimeline !== null) {
+      addActionToTimeline(workingTimeline, hole);
+    }
+  }
+
+  function addSketchAction(sketch: string) {
+    if (workingTimeline !== null) {
+      addSketchToTimeline(workingTimeline, sketch);
+    }
+  }
+
   // const [isRecording, setIsRecording] = useState(false);
 
   return (
@@ -59,14 +74,8 @@ export default function Home() {
         <ResizablePanelGroup direction="horizontal">
           <ResizablePanel>
             <SketchPane
-              addAction={(hole) => {
-                if (workingTimeline !== null)
-                  addActionToTimeline(workingTimeline, hole);
-              }}
-              addSketchAction={(sketch) => {
-                if (workingTimeline !== null)
-                  addSketchToTimeline(workingTimeline, sketch);
-              }}
+              addAction={addAction}
+              addSketchAction={addSketchAction}
             />
           </ResizablePanel>
           <ResizableHandle withHandle />

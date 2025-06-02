@@ -9,6 +9,7 @@ import {
 import { Range } from "@codemirror/state";
 import { syntaxTree } from "@codemirror/language";
 import { tw } from "./utils";
+import { getIndentation, maxHoleLabel } from "./sketch";
 
 class EditWidget extends WidgetType {
   constructor(
@@ -33,8 +34,17 @@ class EditWidget extends WidgetType {
 }
 
 function duplicateNode(view: EditorView, from: number, to: number) {
+  const sketch = view.state.doc.toString();
+  const nextLabel = maxHoleLabel(sketch) + 1;
+  const indent = getIndentation(sketch, to);
+
   const element = view.state.sliceDoc(from, to);
-  const change = { from: to, to: to, insert: element };
+  const change = {
+    from: to,
+    to: to,
+    insert:
+      "\n" + " ".repeat(indent) + element.replace(/\$(\d*)/g, `$${nextLabel}`),
+  };
   view.dispatch({ changes: change });
   return true;
 }
@@ -90,7 +100,7 @@ const editPlugin = ViewPlugin.fromClass(
     decorations: (v) => v.decorations,
     eventHandlers: {
       click: (e, view) => {
-        let target = e.target as HTMLElement;
+        const target = e.target as HTMLElement;
         console.log("target", target);
       },
     },
