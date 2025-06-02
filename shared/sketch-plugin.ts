@@ -14,7 +14,8 @@ import { getIndentation, maxHoleLabel } from "./sketch";
 class EditWidget extends WidgetType {
   constructor(
     readonly id: number,
-    readonly onclick: () => void,
+    readonly onCopy: () => void,
+    readonly onRemove: () => void,
   ) {
     super();
   }
@@ -26,26 +27,48 @@ class EditWidget extends WidgetType {
   toDOM() {
     const wrap = document.createElement("span");
     wrap.setAttribute("aria-hidden", "true");
-    const button = wrap.appendChild(document.createElement("button"));
-    button.className = tw`ml-1 size-3 bg-orange-500 align-middle`;
-    button.onclick = this.onclick;
+
+    const copyButton = wrap.appendChild(document.createElement("button"));
+    copyButton.className = tw`ml-1 size-3 align-top text-xs`;
+    copyButton.textContent = "📋";
+    copyButton.onclick = this.onCopy;
+
+    const removeButton = wrap.appendChild(document.createElement("button"));
+    removeButton.className = tw`ml-1 size-3 align-top text-xs`;
+    removeButton.textContent = "❌";
+    removeButton.onclick = this.onRemove;
     return wrap;
   }
 }
 
-function duplicateNode(view: EditorView, from: number, to: number) {
+function copyNode(view: EditorView, from: number, to: number) {
   const sketch = view.state.doc.toString();
   const nextLabel = maxHoleLabel(sketch) + 1;
   const indent = getIndentation(sketch, to);
 
   const element = view.state.sliceDoc(from, to);
-  const change = {
-    from: to,
-    to: to,
-    insert:
-      "\n" + " ".repeat(indent) + element.replace(/\$(\d*)/g, `$${nextLabel}`),
-  };
-  view.dispatch({ changes: change });
+  view.dispatch({
+    changes: {
+      from: to,
+      to: to,
+      insert:
+        "\n" +
+        " ".repeat(indent) +
+        element.replace(/\$(\d*)/g, `$${nextLabel}`),
+    },
+  });
+  return true;
+}
+
+function removeNode(view: EditorView, from: number, to: number) {
+  const sketch = view.state.doc.toString();
+  const fromIndent = getIndentation(sketch, from);
+  view.dispatch({
+    changes: {
+      from: from - fromIndent - 1, // -1 for the newline before the element
+      to: to,
+    },
+  });
   return true;
 }
 
@@ -62,8 +85,10 @@ function editDecorations(view: EditorView) {
           const children = node.node.getChildren("JSXElement");
           children.forEach((child) => {
             const deco = Decoration.widget({
-              widget: new EditWidget(++cnt, () =>
-                duplicateNode(view, child.from, child.to),
+              widget: new EditWidget(
+                ++cnt,
+                () => copyNode(view, child.from, child.to),
+                () => removeNode(view, child.from, child.to),
               ),
               side: 1,
             });
