@@ -5,6 +5,7 @@ import {
 } from "@/components/ui/resizable";
 import { LivePreview, LiveProvider } from "react-live";
 import CodeMirror from "@uiw/react-codemirror";
+import { githubLight } from "@uiw/codemirror-theme-github";
 import { javascript } from "@codemirror/lang-javascript";
 import { editPlugin } from "@/shared/sketch-plugin";
 import { EditorView } from "@codemirror/view";
@@ -54,6 +55,7 @@ export default function SketchPane({
                     <div className="flex items-center gap-0.5">
                       <Label htmlFor="lock-switch">✍️</Label>
                       <Switch
+                        className="data-[state=checked]:bg-orange-500 data-[state=unchecked]:bg-orange-300"
                         id="lock-switch"
                         checked={locked}
                         onCheckedChange={setLocked}
@@ -69,7 +71,7 @@ export default function SketchPane({
                     </p>
                   </TooltipContent>
                 </Tooltip>
-                <Separator orientation="vertical" />
+                <Separator className="bg-orange-200" orientation="vertical" />
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
@@ -87,22 +89,22 @@ export default function SketchPane({
                 </Tooltip>
               </div>
             </div>
-            <Separator />
+            <Separator className="bg-orange-200" />
             <CodeMirror
               value={sketch}
               extensions={[
                 javascript({ jsx: true }),
+                githubLight,
                 EditorView.lineWrapping,
                 EditorView.editable.of(!locked),
-                editPlugin,
-              ]}
+              ].concat(locked ? [editPlugin] : [])}
               onChange={setSketch}
               height="100%"
               className="h-full"
             />
           </div>
         </ResizablePanel>
-        <ResizableHandle withHandle={false} />
+        <ResizableHandle className="bg-orange-200" withHandle={false} />
         <ResizablePanel>
           <LivePreview className={locked ? "" : "pointer-events-none"} />
         </ResizablePanel>

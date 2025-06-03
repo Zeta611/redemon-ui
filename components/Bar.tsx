@@ -13,7 +13,7 @@ import Link from "next/link";
 
 export default function Bar() {
   return (
-    <div className="flex items-end gap-5">
+    <div className="flex items-end gap-5 bg-orange-50 px-3 py-2">
       <Link
         href="/"
         className="text-lg font-bold [font-variant:small-caps] lg:text-xl"

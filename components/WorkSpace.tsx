@@ -96,13 +96,13 @@ export default function WorkSpace() {
               addAction={addAction}
             />
           </ResizablePanel>
-          <ResizableHandle withHandle />
+          <ResizableHandle className="bg-orange-200" withHandle />
           <ResizablePanel>
             <SynthPane />
           </ResizablePanel>
         </ResizablePanelGroup>
       </ResizablePanel>
-      <ResizableHandle withHandle />
+      <ResizableHandle className="bg-orange-200" withHandle />
       <ResizablePanel
         defaultSize={25}
         minSize={25}

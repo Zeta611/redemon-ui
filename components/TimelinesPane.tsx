@@ -1,4 +1,3 @@
-import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { type Timeline as TimelineType } from "./Timeline";
@@ -30,9 +29,12 @@ export default function TimelinesPane({
   setWorkingTimeline,
 }: TimelinesPaneProps) {
   return (
-    <div className={locked ? "" : "cursor-not-allowed"}>
+    <div className={cn("h-full", locked || "cursor-not-allowed")}>
       <div
-        className={cn("flex h-full flex-col", locked || "pointer-events-none")}
+        className={cn(
+          "flex h-full flex-col",
+          locked ? "bg-orange-50" : "pointer-events-none bg-gray-50",
+        )}
       >
         <div className="flex h-7 items-center justify-between">
           <div className="px-2 text-sm font-normal">🎞️ Timelines</div>
@@ -54,7 +56,6 @@ export default function TimelinesPane({
             </Tooltip>
           </div>
         </div>
-        <Separator />
         <div className="flex grow flex-col gap-2 overflow-y-auto p-3 pb-17">
           <ol className="flex flex-col gap-2">
             {timelines.map((timeline, index) => (
@@ -73,7 +74,7 @@ export default function TimelinesPane({
         </div>
         <div className="relative">
           <Button
-            className="absolute right-3 bottom-3 left-3 h-12 bg-blue-300/80 backdrop-blur-sm hover:bg-blue-300"
+            className="absolute right-3 bottom-3 left-3 h-12 bg-orange-500/80 backdrop-blur-sm hover:bg-orange-500"
             onClick={addTimeline}
           >
             <Plus />

@@ -29,10 +29,8 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} flex h-screen w-screen flex-col antialiased`}
       >
-        <div className="px-3 py-2">
-          <Bar />
-        </div>
-        <Separator />
+        <Bar />
+        <Separator className="bg-orange-200" />
         {children}
       </body>
     </html>

@@ -23,6 +23,7 @@
     "@radix-ui/react-switch": "^1.2.5",
     "@radix-ui/react-tooltip": "^1.2.7",
     "@rescript/core": "^1.6.1",
+    "@uiw/codemirror-theme-github": "^4.23.12",
     "@uiw/react-codemirror": "^4.23.12",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

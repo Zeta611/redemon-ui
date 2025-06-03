@@ -6,6 +6,7 @@ import {
 } from "@/components/ui/resizable";
 import { LivePreview, LiveProvider } from "react-live";
 import CodeMirror from "@uiw/react-codemirror";
+import { githubLight } from "@uiw/codemirror-theme-github";
 import { javascript } from "@codemirror/lang-javascript";
 import { EditorView } from "@codemirror/view";
 import { Separator } from "@/components/ui/separator";
@@ -42,17 +43,21 @@ export default function SynthPane() {
             <div className="flex h-7 items-center justify-between">
               <div className="px-2 text-sm font-normal">🤖 Synthesized</div>
             </div>
-            <Separator />
+            <Separator className="bg-orange-200" />
             <CodeMirror
               value={code}
               onChange={setCode}
-              extensions={[javascript({ jsx: true }), EditorView.lineWrapping]}
+              extensions={[
+                javascript({ jsx: true }),
+                githubLight,
+                EditorView.lineWrapping,
+              ]}
               height="100%"
               className="h-full"
             />
           </div>
         </ResizablePanel>
-        <ResizableHandle withHandle={false} />
+        <ResizableHandle className="bg-orange-200" withHandle={false} />
         <ResizablePanel>
           <LivePreview />
         </ResizablePanel>
