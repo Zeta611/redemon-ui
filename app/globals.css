@@ -1,21 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-.dots-dense {
-  --dot-spacing: 14px;
-}
-
-.dots-wide {
-  --dot-spacing: 32px;
-}
-
-.dots {
-  background-image: radial-gradient(#EA580C 1px, transparent 0px);
-  background-repeat: repeat;
-  background-size: var(--dot-spacing, 14px) var(--dot-spacing, 14px);
-  background-position: center;
-}
-
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -136,5 +121,20 @@
 
   body {
     @apply bg-background text-foreground;
+  }
+
+  .dots-dense {
+    --dot-spacing: 14px;
+  }
+
+  .dots-wide {
+    --dot-spacing: 32px;
+  }
+
+  .dots {
+    background-image: radial-gradient(#EA580C 1px, transparent 0px);
+    background-repeat: repeat;
+    background-size: var(--dot-spacing, 14px) var(--dot-spacing, 14px);
+    background-position: center;
   }
 }

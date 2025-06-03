@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Fira_Sans, Playfair, Playfair_Display_SC } from "next/font/google";
+import { Montserrat, Playfair, Playfair_Display_SC } from "next/font/google";
 import "./globals.css";
 import { Separator } from "@/components/ui/separator";
 import Bar from "@/components/Bar";
@@ -15,9 +15,9 @@ const playfairDisplaySC = Playfair_Display_SC({
   subsets: ["latin"],
 });
 
-const firaSans = Fira_Sans({
+const montserrat = Montserrat({
   variable: "--font-sans",
-  weight: ["400"],
+  weight: "variable",
   subsets: ["latin"],
 });
 
@@ -34,7 +34,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${playfair.variable} ${playfairDisplaySC.variable} ${firaSans.variable} flex h-screen w-screen flex-col font-serif antialiased`}
+        className={`${playfair.variable} ${playfairDisplaySC.variable} ${montserrat.variable} flex h-screen w-screen flex-col font-serif antialiased`}
       >
         <Bar />
         <Separator className="bg-orange-200" />

@@ -38,7 +38,7 @@ export default function SketchPane({
   addAction,
 }: SketchPaneProps) {
   try {
-    console.log(parse(sketch));
+    console.log(parse(sketch.trim()));
   } catch (e) {
     console.error(e);
   }

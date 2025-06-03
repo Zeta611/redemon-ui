@@ -20,7 +20,7 @@ export default function Bar() {
         </Link>
         <Menubar>
           <MenubarMenu>
-            <MenubarTrigger className="font-sans text-sm font-medium">
+            <MenubarTrigger className="font-sans text-sm font-semibold">
               File
             </MenubarTrigger>
             <MenubarContent>
@@ -36,7 +36,7 @@ export default function Bar() {
             </MenubarContent>
           </MenubarMenu>
           <MenubarMenu>
-            <MenubarTrigger className="font-sans text-sm font-medium">
+            <MenubarTrigger className="font-sans text-sm font-semibold">
               About
             </MenubarTrigger>
           </MenubarMenu>
