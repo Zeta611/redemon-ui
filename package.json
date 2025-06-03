@@ -16,9 +16,11 @@
   },
   "dependencies": {
     "@codemirror/lang-javascript": "^6.2.3",
+    "@radix-ui/react-label": "^2.1.7",
     "@radix-ui/react-menubar": "^1.1.14",
     "@radix-ui/react-separator": "^1.1.6",
     "@radix-ui/react-slot": "^1.2.2",
+    "@radix-ui/react-switch": "^1.2.5",
     "@radix-ui/react-tooltip": "^1.2.7",
     "@rescript/core": "^1.6.1",
     "@uiw/react-codemirror": "^4.23.12",

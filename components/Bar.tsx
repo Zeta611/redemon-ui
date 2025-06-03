@@ -18,7 +18,7 @@ export default function Bar() {
         href="/"
         className="text-lg font-bold [font-variant:small-caps] lg:text-xl"
       >
-        <span>ReDemon</span>
+        ReDemon
         <span className="ml-1 rounded border-2 px-0.5 text-base lg:text-lg">
           ui
         </span>

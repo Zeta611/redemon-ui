@@ -38,19 +38,19 @@ export default function Timeline({
     >
       {timeline.map((item, index) =>
         item.kind === "Action" ? (
-          <span
+          <div
             key={index}
             className="rounded-lg border-3 border-amber-700 bg-amber-500 p-1"
           >
             👆 {item.action}
-          </span>
+          </div>
         ) : (
-          <span
+          <div
             key={index}
             className="rounded-md border-3 border-fuchsia-800 bg-fuchsia-600 p-1"
           >
             🎨
-          </span>
+          </div>
         ),
       )}
       <div className="flex-1" />

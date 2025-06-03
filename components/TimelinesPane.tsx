@@ -3,49 +3,82 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { type Timeline as TimelineType } from "./Timeline";
 import Timeline from "./Timeline";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { cn } from "@/shared/utils";
 
 type TimelinesPaneProps = {
+  locked: boolean;
   timelines: TimelineType[];
   addTimeline: () => void;
   removeTimeline: (index: number) => void;
+  resetTimelines: () => void;
   workingTimeline: number | null;
   setWorkingTimeline: (index: number | null) => void;
 };
 
 export default function TimelinesPane({
+  locked,
   timelines,
   addTimeline,
   removeTimeline,
+  resetTimelines,
   workingTimeline,
   setWorkingTimeline,
 }: TimelinesPaneProps) {
   return (
-    <div className="flex h-full flex-col">
-      <span className="px-2 text-sm font-normal">🎞️ Timelines</span>
-      <Separator />
-      <div className="flex grow flex-col gap-2 overflow-y-auto p-3 pb-17">
-        <ol className="flex flex-col gap-2">
-          {timelines.map((timeline, index) => (
-            <li key={index}>
-              <Timeline
-                timeline={timeline}
-                removeTimeline={() => removeTimeline(index)}
-                isWorking={workingTimeline === index}
-                setIsWorking={() => {
-                  setWorkingTimeline(index);
-                }}
-              />
-            </li>
-          ))}
-        </ol>
-      </div>
-      <div className="relative">
-        <Button
-          className="absolute right-3 bottom-3 left-3 h-12 bg-blue-300/80 backdrop-blur-sm"
-          onClick={addTimeline}
-        >
-          <Plus />
-        </Button>
+    <div className={locked ? "" : "cursor-not-allowed"}>
+      <div
+        className={cn("flex h-full flex-col", locked || "pointer-events-none")}
+      >
+        <div className="flex h-7 items-center justify-between">
+          <div className="px-2 text-sm font-normal">🎞️ Timelines</div>
+          <div className="flex h-4 items-center gap-1 px-1">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="size-5"
+                  onClick={resetTimelines}
+                >
+                  🗑️
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Reset Timelines</p>
+              </TooltipContent>
+            </Tooltip>
+          </div>
+        </div>
+        <Separator />
+        <div className="flex grow flex-col gap-2 overflow-y-auto p-3 pb-17">
+          <ol className="flex flex-col gap-2">
+            {timelines.map((timeline, index) => (
+              <li key={index}>
+                <Timeline
+                  timeline={timeline}
+                  removeTimeline={() => removeTimeline(index)}
+                  isWorking={workingTimeline === index}
+                  setIsWorking={() => {
+                    setWorkingTimeline(index);
+                  }}
+                />
+              </li>
+            ))}
+          </ol>
+        </div>
+        <div className="relative">
+          <Button
+            className="absolute right-3 bottom-3 left-3 h-12 bg-blue-300/80 backdrop-blur-sm hover:bg-blue-300"
+            onClick={addTimeline}
+          >
+            <Plus />
+          </Button>
+        </div>
       </div>
     </div>
   );
