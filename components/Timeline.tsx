@@ -32,7 +32,9 @@ export default function Timeline({
     <div
       className={cn(
         "flex h-12 items-center gap-2 rounded-lg border-3 p-1 shadow-sm",
-        isWorking ? "border-red-400" : "border-stone-300",
+        isWorking
+          ? "border-orange-500 bg-orange-200"
+          : "border-stone-300 bg-orange-100",
       )}
       onClick={setIsWorking}
     >

@@ -20,6 +20,7 @@ import {
 import { format, replaceHoles } from "@/shared/sketch";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { cn } from "@/shared/utils";
 
 type SketchPaneProps = {
   sketch: string;
@@ -47,15 +48,15 @@ export default function SketchPane({
       <ResizablePanelGroup direction="vertical">
         <ResizablePanel defaultSize={60} minSize={30}>
           <div className="flex h-full flex-col">
-            <div className="flex h-7 items-center justify-between">
-              <div className="px-2 text-sm font-normal">🎨 Sketch</div>
-              <div className="flex h-4 items-center gap-1 px-1">
+            <div className="flex h-7 items-center justify-between px-2">
+              <div className="text-md font-semibold">🎨 Sketch</div>
+              <div className="flex h-4 items-center gap-2">
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <div className="flex items-center gap-0.5">
                       <Label htmlFor="lock-switch">✍️</Label>
                       <Switch
-                        className="data-[state=checked]:bg-orange-500 data-[state=unchecked]:bg-orange-300"
+                        className="data-[state=checked]:bg-orange-500 data-[state=unchecked]:bg-stone-300"
                         id="lock-switch"
                         checked={locked}
                         onCheckedChange={setLocked}
@@ -80,7 +81,7 @@ export default function SketchPane({
                       className="size-5"
                       onClick={async () => setSketch(await format(sketch))}
                     >
-                      🖌️
+                      ✨
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>
@@ -97,7 +98,7 @@ export default function SketchPane({
                 githubLight,
                 EditorView.lineWrapping,
                 EditorView.editable.of(!locked),
-              ].concat(locked ? [editPlugin] : [])}
+              ].concat(locked ? [editPlugin()] : [])}
               onChange={setSketch}
               height="100%"
               className="h-full"
@@ -105,8 +106,13 @@ export default function SketchPane({
           </div>
         </ResizablePanel>
         <ResizableHandle className="bg-orange-200" withHandle={false} />
-        <ResizablePanel>
-          <LivePreview className={locked ? "" : "pointer-events-none"} />
+        <ResizablePanel className="dots-wide dots flex items-center justify-center">
+          <LivePreview
+            className={cn(
+              "bg-background rounded-lg border-3 border-orange-300 p-3 font-sans",
+              locked || "pointer-events-none",
+            )}
+          />
         </ResizablePanel>
       </ResizablePanelGroup>
     </LiveProvider>

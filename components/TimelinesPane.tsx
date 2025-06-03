@@ -33,12 +33,12 @@ export default function TimelinesPane({
       <div
         className={cn(
           "flex h-full flex-col",
-          locked ? "bg-orange-50" : "pointer-events-none bg-gray-50",
+          locked ? "bg-orange-50" : "pointer-events-none bg-stone-100",
         )}
       >
-        <div className="flex h-7 items-center justify-between">
-          <div className="px-2 text-sm font-normal">🎞️ Timelines</div>
-          <div className="flex h-4 items-center gap-1 px-1">
+        <div className="flex h-7 items-center justify-between px-2">
+          <div className="text-md font-semibold">🎞️ Timelines</div>
+          <div className="flex h-4 items-center gap-2">
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button

@@ -1,16 +1,23 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Fira_Sans, Playfair, Playfair_Display_SC } from "next/font/google";
 import "./globals.css";
 import { Separator } from "@/components/ui/separator";
 import Bar from "@/components/Bar";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const playfair = Playfair({
+  variable: "--font-serif",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const playfairDisplaySC = Playfair_Display_SC({
+  variable: "--font-heading",
+  weight: ["700"],
+  subsets: ["latin"],
+});
+
+const firaSans = Fira_Sans({
+  variable: "--font-sans",
+  weight: ["400"],
   subsets: ["latin"],
 });
 
@@ -27,7 +34,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} flex h-screen w-screen flex-col antialiased`}
+        className={`${playfair.variable} ${playfairDisplaySC.variable} ${firaSans.variable} flex h-screen w-screen flex-col font-serif antialiased`}
       >
         <Bar />
         <Separator className="bg-orange-200" />
