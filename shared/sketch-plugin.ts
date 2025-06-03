@@ -27,16 +27,17 @@ class EditWidget extends WidgetType {
   toDOM() {
     const wrap = document.createElement("span");
     wrap.setAttribute("aria-hidden", "true");
-
-    const copyButton = wrap.appendChild(document.createElement("button"));
-    copyButton.className = tw`ml-1 size-3 align-top text-xs`;
-    copyButton.textContent = "📋";
-    copyButton.onclick = this.onCopy;
+    wrap.setAttribute("class", tw`inline-flex items-center gap-0.5 px-0.5`);
 
     const removeButton = wrap.appendChild(document.createElement("button"));
-    removeButton.className = tw`ml-1 size-3 align-top text-xs`;
-    removeButton.textContent = "❌";
+    removeButton.className = tw`rounded bg-red-200 p-0.5 text-red-900 hover:bg-red-400`;
+    removeButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="10.5" height="10.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-square-minus-icon lucide-square-minus"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M8 12h8"/></svg>`;
     removeButton.onclick = this.onRemove;
+
+    const copyButton = wrap.appendChild(document.createElement("button"));
+    copyButton.className = tw`rounded bg-green-200 p-0.5 text-green-900 hover:bg-green-400`;
+    copyButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="10.5" height="10.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-copy-plus-icon lucide-copy-plus"><line x1="15" x2="15" y1="12" y2="18"/><line x1="12" x2="18" y1="15" y2="15"/><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>`;
+    copyButton.onclick = this.onCopy;
     return wrap;
   }
 }
