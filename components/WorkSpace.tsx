@@ -58,16 +58,16 @@ export default function WorkSpace() {
     );
   }
 
-  function addSketchToTimeline(index: number, sketch: string) {
-    setTimelines(
-      timelines.map((timeline, i) => {
-        if (i === index) {
-          return [...timeline, { kind: "Sketch", sketch }];
-        }
-        return timeline;
-      }),
-    );
-  }
+  // function addSketchToTimeline(index: number, sketch: string) {
+  //   setTimelines(
+  //     timelines.map((timeline, i) => {
+  //       if (i === index) {
+  //         return [...timeline, { kind: "Sketch", sketch }];
+  //       }
+  //       return timeline;
+  //     }),
+  //   );
+  // }
 
   function addAction(hole: number) {
     if (workingTimeline !== null) {
