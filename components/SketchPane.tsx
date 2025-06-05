@@ -1,28 +1,28 @@
+import { LivePreview, LiveProvider } from "react-live";
+import CodeMirror from "@uiw/react-codemirror";
+import { githubLight } from "@uiw/codemirror-theme-github";
+import { javascript } from "@codemirror/lang-javascript";
+import { EditorView } from "@codemirror/view";
+import root from "react-shadow";
+import { useEffect, useRef } from "react";
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
-import { LivePreview, LiveProvider } from "react-live";
-import CodeMirror from "@uiw/react-codemirror";
-import { githubLight } from "@uiw/codemirror-theme-github";
-import { javascript } from "@codemirror/lang-javascript";
 import { editPlugin } from "@/shared/sketch-plugin";
-import { EditorView } from "@codemirror/view";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { parse } from "@/shared/lang.res.mjs";
 import {
   Tooltip,
-  TooltipTrigger,
   TooltipContent,
+  TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { format, replaceHoles } from "@/shared/sketch";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/shared/utils";
-import root from "react-shadow";
-import { useEffect, useRef } from "react";
 import { unoGenerator as generator, injectStyles } from "@/shared/injectStyles";
 
 type SketchPaneProps = {

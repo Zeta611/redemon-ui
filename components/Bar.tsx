@@ -1,3 +1,4 @@
+import Link from "next/link";
 import {
   Menubar,
   MenubarContent,
@@ -9,7 +10,6 @@ import {
   MenubarSubTrigger,
   MenubarTrigger,
 } from "@/components/ui/menubar";
-import Link from "next/link";
 
 export default function Bar() {
   return (

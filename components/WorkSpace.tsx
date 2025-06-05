@@ -1,10 +1,10 @@
 "use client";
+import { useState } from "react";
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
-import { useState } from "react";
 import TimelinePanes from "@/components/TimelinesPane";
 import SketchPane from "@/components/SketchPane";
 import SynthPane from "@/components/SynthPane";

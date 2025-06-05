@@ -1,17 +1,17 @@
 "use client";
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from "@/components/ui/resizable";
 import { LivePreview, LiveProvider } from "react-live";
 import CodeMirror from "@uiw/react-codemirror";
 import { githubLight } from "@uiw/codemirror-theme-github";
 import { javascript } from "@codemirror/lang-javascript";
 import { EditorView } from "@codemirror/view";
-import { Separator } from "@/components/ui/separator";
-import { useState, useRef, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import root from "react-shadow";
+import { Separator } from "@/components/ui/separator";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable";
 import { unoGenerator as generator, injectStyles } from "@/shared/injectStyles";
 
 // TODO: Remove sample
