@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Montserrat, Playfair, Playfair_Display_SC } from "next/font/google";
 import "./globals.css";
+import { Analytics } from "@vercel/analytics/next";
 import { Separator } from "@/ui/separator";
 import Bar from "@/components/Bar";
 
@@ -39,6 +40,7 @@ export default function RootLayout({
         <Bar />
         <Separator className="bg-orange-200" />
         {children}
+        <Analytics />
       </body>
     </html>
   );
