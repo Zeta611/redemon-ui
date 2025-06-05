@@ -6,12 +6,12 @@ import { javascript } from "@codemirror/lang-javascript";
 import { EditorView } from "@codemirror/view";
 import { useEffect, useRef, useState } from "react";
 import root from "react-shadow";
-import { Separator } from "@/components/ui/separator";
+import { Separator } from "@/ui/separator";
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
-} from "@/components/ui/resizable";
+} from "@/ui/resizable";
 import injectStyles from "@/shared/injectStyles";
 
 // TODO: Remove sample

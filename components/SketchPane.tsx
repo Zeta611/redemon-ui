@@ -9,19 +9,15 @@ import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
-} from "@/components/ui/resizable";
+} from "@/ui/resizable";
 import { editPlugin } from "@/shared/sketch-plugin";
-import { Separator } from "@/components/ui/separator";
-import { Button } from "@/components/ui/button";
+import { Separator } from "@/ui/separator";
+import { Button } from "@/ui/button";
 import { parse } from "@/shared/lang.res.mjs";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/ui/tooltip";
 import { format, replaceHoles } from "@/shared/sketch";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
+import { Switch } from "@/ui/switch";
+import { Label } from "@/ui/label";
 import { cn } from "@/shared/utils";
 import injectStyles from "@/shared/injectStyles";
 

@@ -4,7 +4,7 @@ import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
-} from "@/components/ui/resizable";
+} from "@/ui/resizable";
 import TimelinePanes from "@/components/TimelinesPane";
 import SketchPane from "@/components/SketchPane";
 import SynthPane from "@/components/SynthPane";

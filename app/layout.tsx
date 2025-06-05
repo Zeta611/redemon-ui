@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Montserrat, Playfair, Playfair_Display_SC } from "next/font/google";
 import "./globals.css";
-import { Separator } from "@/components/ui/separator";
+import { Separator } from "@/ui/separator";
 import Bar from "@/components/Bar";
 
 const playfair = Playfair({

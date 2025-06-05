@@ -1,12 +1,8 @@
 import { Plus } from "lucide-react";
 import { type Timeline as TimelineType } from "./Timeline";
 import { default as Timeline } from "./Timeline";
-import { Button } from "@/components/ui/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Button } from "@/ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/ui/tooltip";
 import { cn } from "@/shared/utils";
 
 type TimelinesPaneProps = {
