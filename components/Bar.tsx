@@ -15,12 +15,12 @@ export default function Bar() {
   return (
     <div className="dots-dense dots">
       <div className="flex items-center gap-7 bg-linear-to-l to-orange-50 to-85% px-3 py-2">
-        <Link href="/" className="font-heading text-2xl lg:text-xl">
+        <Link href="/" className="font-heading text-2xl">
           ReDemon UI
         </Link>
         <Menubar>
           <MenubarMenu>
-            <MenubarTrigger className="font-sans text-sm font-semibold">
+            <MenubarTrigger className="text-md font-medium">
               File
             </MenubarTrigger>
             <MenubarContent>
@@ -36,7 +36,7 @@ export default function Bar() {
             </MenubarContent>
           </MenubarMenu>
           <MenubarMenu>
-            <MenubarTrigger className="font-sans text-sm font-semibold">
+            <MenubarTrigger className="text-md font-medium">
               About
             </MenubarTrigger>
           </MenubarMenu>

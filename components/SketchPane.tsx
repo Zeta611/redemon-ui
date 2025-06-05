@@ -64,24 +64,31 @@ export default function SketchPane({
       <ResizablePanelGroup direction="vertical">
         <ResizablePanel defaultSize={60} minSize={30}>
           <div className="flex h-full flex-col">
-            <div className="flex h-7 items-center justify-between px-2">
-              <div className="text-md font-semibold">🎨 Sketch</div>
-              <div className="flex h-4 items-center gap-2">
+            <div className="flex h-8 items-center justify-between px-2">
+              <div className="flex gap-2 font-bold">
+                <span>🎨</span>
+                <span className="font-serif">Sketch</span>
+              </div>
+              <div className="flex h-4 items-center gap-3">
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <div className="flex items-center gap-0.5">
-                      <Label htmlFor="lock-switch">✍️</Label>
+                    <div className="flex items-center gap-1.5">
+                      <Label className="size-5 text-lg" htmlFor="lock-switch">
+                        ✍️
+                      </Label>
                       <Switch
                         className="data-[state=checked]:bg-orange-500 data-[state=unchecked]:bg-stone-300"
                         id="lock-switch"
                         checked={locked}
                         onCheckedChange={setLocked}
                       />
-                      <Label htmlFor="lock-switch">🔒</Label>
+                      <Label className="size-5 text-lg" htmlFor="lock-switch">
+                        🔒
+                      </Label>
                     </div>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>
+                    <p className="text-sm">
                       {locked
                         ? "Edit (Timelines will be reset!)"
                         : "Lock (Ready to demonstrate!)"}
@@ -94,14 +101,14 @@ export default function SketchPane({
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="size-5"
+                      className="size-5 text-lg"
                       onClick={async () => setSketch(await format(sketch))}
                     >
                       ✨
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Format</p>
+                    <p className="text-sm">Format</p>
                   </TooltipContent>
                 </Tooltip>
               </div>
@@ -117,7 +124,7 @@ export default function SketchPane({
               ].concat(locked ? [editPlugin()] : [])}
               onChange={setSketch}
               height="100%"
-              className="h-full"
+              className="h-full text-sm"
             />
           </div>
         </ResizablePanel>
@@ -126,7 +133,7 @@ export default function SketchPane({
           <root.div
             ref={shadowRoot}
             className={cn(
-              "bg-background rounded-lg border-3 border-orange-300 p-3 font-sans",
+              "bg-background rounded-lg border-3 border-orange-300 p-3",
               locked || "pointer-events-none",
             )}
           >

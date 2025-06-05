@@ -34,7 +34,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${playfair.variable} ${playfairDisplaySC.variable} ${montserrat.variable} flex h-screen w-screen flex-col font-serif antialiased`}
+        className={`${playfair.variable} ${playfairDisplaySC.variable} ${montserrat.variable} flex h-screen w-screen flex-col font-sans antialiased`}
       >
         <Bar />
         <Separator className="bg-orange-200" />

@@ -36,22 +36,25 @@ export default function TimelinesPane({
           locked ? "bg-orange-50" : "pointer-events-none bg-stone-100",
         )}
       >
-        <div className="flex h-7 items-center justify-between px-2">
-          <div className="text-md font-semibold">🎞️ Timelines</div>
-          <div className="flex h-4 items-center gap-2">
+        <div className="flex h-8 items-center justify-between px-2">
+          <div className="flex gap-2 font-bold">
+            <span>🎞️</span>
+            <span className="font-serif">Timelines</span>
+          </div>
+          <div className="flex h-4 items-center gap-3">
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="size-5"
+                  className="size-5 text-lg"
                   onClick={resetTimelines}
                 >
                   🗑️
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
-                <p>Reset Timelines</p>
+                <p className="text-sm">Reset Timelines</p>
               </TooltipContent>
             </Tooltip>
           </div>

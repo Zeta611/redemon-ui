@@ -55,8 +55,11 @@ export default function SynthPane() {
       <ResizablePanelGroup direction="vertical">
         <ResizablePanel defaultSize={60} minSize={30}>
           <div className="flex h-full flex-col">
-            <div className="flex h-7 items-center justify-between px-2">
-              <div className="text-md font-semibold">🤖 Synthesized</div>
+            <div className="flex h-8 items-center justify-between px-2">
+              <div className="flex gap-2 font-bold">
+                <span>🤖</span>
+                <span className="font-serif">Synthesized</span>
+              </div>
             </div>
             <Separator className="bg-orange-200" />
             <CodeMirror
@@ -68,7 +71,7 @@ export default function SynthPane() {
                 EditorView.lineWrapping,
               ]}
               height="100%"
-              className="h-full"
+              className="h-full text-sm"
             />
           </div>
         </ResizablePanel>
@@ -76,7 +79,7 @@ export default function SynthPane() {
         <ResizablePanel className="dots-wide dots flex items-center justify-center">
           <root.div
             ref={shadowRoot}
-            className="bg-background rounded-lg border-3 border-orange-300 p-3 font-sans"
+            className="bg-background rounded-lg border-3 border-orange-300 p-3"
           >
             <LivePreview />
           </root.div>
