@@ -12,7 +12,7 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
-import { unoGenerator as generator, injectStyles } from "@/shared/injectStyles";
+import injectStyles from "@/shared/injectStyles";
 
 // TODO: Remove sample
 const sample = `function Counter() {
@@ -44,9 +44,6 @@ export default function SynthPane() {
       const root = shadowRoot.current?.shadowRoot;
       if (!root) return;
       await injectStyles(code, root);
-
-      const { css: baseCss } = await generator.generate("", { minify: true });
-      console.log("Base CSS:", baseCss);
     })();
   }, [code]);
 

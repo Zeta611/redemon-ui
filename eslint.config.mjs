@@ -20,6 +20,7 @@ const eslintConfig = [
     },
     rules: {
       ...importPlugin.configs.recommended.rules,
+      "import/no-named-as-default": "off",
       "import/no-absolute-path": "error",
       "import/no-relative-packages": "error",
       "import/order": "error",

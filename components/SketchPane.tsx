@@ -23,7 +23,7 @@ import { format, replaceHoles } from "@/shared/sketch";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/shared/utils";
-import { unoGenerator as generator, injectStyles } from "@/shared/injectStyles";
+import injectStyles from "@/shared/injectStyles";
 
 type SketchPaneProps = {
   sketch: string;
@@ -47,9 +47,6 @@ export default function SketchPane({
       const root = shadowRoot.current?.shadowRoot;
       if (!root) return;
       await injectStyles(replaceHoles(sketch), root);
-
-      const { css: baseCss } = await generator.generate("", { minify: true });
-      console.log("Base CSS:", baseCss);
     })();
   }, [sketch]);
 
