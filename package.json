@@ -25,6 +25,8 @@
     "@rescript/core": "^1.6.1",
     "@uiw/codemirror-theme-github": "^4.23.12",
     "@uiw/react-codemirror": "^4.23.12",
+    "@unocss/core": "^66.1.3",
+    "@unocss/preset-wind3": "^66.1.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.510.0",
@@ -34,6 +36,7 @@
     "react-dom": "^19.0.0",
     "react-live": "^4.1.8",
     "react-resizable-panels": "^3.0.2",
+    "react-shadow": "^20.6.0",
     "rescript": "^12.0.0-alpha.13",
     "tailwind-merge": "^3.3.0"
   },

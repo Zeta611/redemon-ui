@@ -15,7 +15,7 @@ const sample = `<div className="flex flex-col items-center">
     0
   </div>
   <button
-    className="bg-stone-500 text-white px-2 py-1 rounded"
+    className="border-none bg-stone-500 text-white px-2 py-1 rounded"
     onClick={$1}
   >
     Increment

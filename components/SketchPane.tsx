@@ -21,6 +21,9 @@ import { format, replaceHoles } from "@/shared/sketch";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/shared/utils";
+import root from "react-shadow";
+import { useEffect, useRef } from "react";
+import { unoGenerator as generator, injectStyles } from "@/shared/injectStyles";
 
 type SketchPaneProps = {
   sketch: string;
@@ -37,6 +40,19 @@ export default function SketchPane({
   setLocked,
   addAction,
 }: SketchPaneProps) {
+  const shadowRoot = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    (async () => {
+      const root = shadowRoot.current?.shadowRoot;
+      if (!root) return;
+      await injectStyles(replaceHoles(sketch), root);
+
+      const { css: baseCss } = await generator.generate("", { minify: true });
+      console.log("Base CSS:", baseCss);
+    })();
+  }, [sketch]);
+
   try {
     console.log(parse(sketch.trim()));
   } catch (e) {
@@ -107,12 +123,15 @@ export default function SketchPane({
         </ResizablePanel>
         <ResizableHandle className="bg-orange-200" withHandle={false} />
         <ResizablePanel className="dots-wide dots flex items-center justify-center">
-          <LivePreview
+          <root.div
+            ref={shadowRoot}
             className={cn(
               "bg-background rounded-lg border-3 border-orange-300 p-3 font-sans",
               locked || "pointer-events-none",
             )}
-          />
+          >
+            <LivePreview />
+          </root.div>
         </ResizablePanel>
       </ResizablePanelGroup>
     </LiveProvider>

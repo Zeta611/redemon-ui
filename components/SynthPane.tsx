@@ -10,7 +10,9 @@ import { githubLight } from "@uiw/codemirror-theme-github";
 import { javascript } from "@codemirror/lang-javascript";
 import { EditorView } from "@codemirror/view";
 import { Separator } from "@/components/ui/separator";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
+import root from "react-shadow";
+import { unoGenerator as generator, injectStyles } from "@/shared/injectStyles";
 
 // TODO: Remove sample
 const sample = `function Counter() {
@@ -21,7 +23,7 @@ const sample = `function Counter() {
         {count}
       </div>
       <button
-        className="bg-stone-500 text-white px-2 py-1 rounded"
+        className="border-none bg-stone-500 text-white px-2 py-1 rounded"
         onClick={() => setCount(c => c + 1) }
       >
         Increment
@@ -34,7 +36,20 @@ render(<Counter />);
 `;
 
 export default function SynthPane() {
+  const shadowRoot = useRef<HTMLDivElement>(null);
   const [code, setCode] = useState(sample);
+
+  useEffect(() => {
+    (async () => {
+      const root = shadowRoot.current?.shadowRoot;
+      if (!root) return;
+      await injectStyles(code, root);
+
+      const { css: baseCss } = await generator.generate("", { minify: true });
+      console.log("Base CSS:", baseCss);
+    })();
+  }, [code]);
+
   return (
     <LiveProvider code={code} scope={{ useState }} noInline>
       <ResizablePanelGroup direction="vertical">
@@ -59,7 +74,12 @@ export default function SynthPane() {
         </ResizablePanel>
         <ResizableHandle className="bg-orange-200" withHandle={false} />
         <ResizablePanel className="dots-wide dots flex items-center justify-center">
-          <LivePreview className="bg-background rounded-lg border-3 border-orange-300 p-3 font-sans" />
+          <root.div
+            ref={shadowRoot}
+            className="bg-background rounded-lg border-3 border-orange-300 p-3 font-sans"
+          >
+            <LivePreview />
+          </root.div>
         </ResizablePanel>
       </ResizablePanelGroup>
     </LiveProvider>
