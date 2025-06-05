@@ -107,6 +107,7 @@ class NodeEditWidget extends WidgetType {
     readonly id: number,
     readonly onCopy: () => void,
     readonly onRemove: () => void,
+    readonly onInsert: (value: string) => void,
   ) {
     super();
   }
@@ -118,17 +119,48 @@ class NodeEditWidget extends WidgetType {
   toDOM() {
     const wrap = document.createElement("span");
     wrap.setAttribute("aria-hidden", "true");
-    wrap.className = tw`inline-flex items-center gap-0.5 pl-0.5`;
+    wrap.className = tw`inline-flex flex-col gap-1 pl-0.5`;
 
-    const removeButton = wrap.appendChild(document.createElement("button"));
+    const buttons = wrap.appendChild(document.createElement("div"));
+    buttons.className = tw`flex flex-row items-center gap-0.5`;
+
+    const removeButton = buttons.appendChild(document.createElement("button"));
     removeButton.className = tw`rounded bg-red-200 p-0.5 text-red-900 hover:bg-red-400`;
     removeButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="10.5" height="10.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-square-minus-icon lucide-square-minus"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M8 12h8"/></svg>`;
     removeButton.onclick = this.onRemove;
 
-    const copyButton = wrap.appendChild(document.createElement("button"));
-    copyButton.className = tw`rounded bg-green-200 p-0.5 text-green-900 hover:bg-green-400`;
+    const copyButton = buttons.appendChild(document.createElement("button"));
+    copyButton.className = tw`rounded bg-emerald-200 p-0.5 text-emerald-900 hover:bg-emerald-400`;
     copyButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="10.5" height="10.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-copy-plus-icon lucide-copy-plus"><line x1="15" x2="15" y1="12" y2="18"/><line x1="12" x2="18" y1="15" y2="15"/><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>`;
     copyButton.onclick = this.onCopy;
+
+    const insertButton = buttons.appendChild(document.createElement("button"));
+    insertButton.className = tw`rounded bg-amber-200 p-0.5 text-amber-900 hover:bg-amber-400`;
+    insertButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="10.5" height="10.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-square-code-icon lucide-square-code"><path d="m10 9-3 3 3 3"/><path d="m14 15 3-3-3-3"/><rect x="3" y="3" width="18" height="18" rx="2"/></svg>`;
+    insertButton.onclick = () => {
+      insertLine.classList.toggle("hidden");
+    };
+
+    const insertLine = wrap.appendChild(document.createElement("div"));
+    insertLine.className = tw`flex hidden items-end gap-1`;
+    const insertArea = insertLine.appendChild(
+      document.createElement("textarea"),
+    );
+    insertArea.className = tw`z-0 field-sizing-content h-20 w-sm resize overflow-hidden rounded bg-amber-100 px-1 text-black hover:bg-amber-400 focus:bg-amber-200 focus:outline-1 focus:outline-amber-500`;
+    insertArea.placeholder = "Insert new element here";
+    const submitInsert = insertLine.appendChild(
+      document.createElement("button"),
+    );
+    submitInsert.className = tw`rounded bg-amber-200 p-0.5 text-amber-900 hover:bg-amber-400`;
+    submitInsert.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="10.5" height="10.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check-icon lucide-check"><path d="M20 6 9 17l-5-5"/></svg>`;
+    submitInsert.onclick = () => {
+      const value = insertArea.value.trim();
+      if (value) {
+        this.onInsert(value);
+        insertArea.value = "";
+        insertLine.classList.add("hidden");
+      }
+    };
 
     return wrap;
   }
@@ -148,6 +180,19 @@ function copyNode(view: EditorView, from: number, to: number) {
         "\n" +
         " ".repeat(indent) +
         element.replace(/\$(\d*)/g, `$${nextLabel}`),
+    },
+  });
+  return true;
+}
+
+function insertNode(view: EditorView, value: string, to: number) {
+  const sketch = view.state.doc.toString();
+  const indent = getIndentation(sketch, to);
+  view.dispatch({
+    changes: {
+      from: to,
+      to: to,
+      insert: "\n" + " ".repeat(indent) + value,
     },
   });
   return true;
@@ -198,16 +243,13 @@ function editDecorations(view: EditorView) {
           case "JSXAttribute": {
             const attribute = view.state.sliceDoc(node.from, node.to);
             const [identifier, value] = attribute.split("=");
-            if (!(value.startsWith('"') && value.endsWith('"'))) {
-              break;
-            }
-            const from = node.from + identifier.length + 2; // +2 for the '="'
-            const to = node.to - 1; // -1 for the '"'
+            const from = node.from + identifier.length + 1; // +1 for the '='
+            const to = node.to;
             const deco = Decoration.replace({
               widget: new AttributeReplaceWidget(
                 ++cnt,
                 identifier,
-                value.slice(1, -1), // remove the surrounding quotes
+                value,
                 (value) => {
                   replaceText(view, from, to, value);
                 },
@@ -226,6 +268,7 @@ function editDecorations(view: EditorView) {
                   ++cnt,
                   () => copyNode(view, child.from, child.to),
                   () => removeNode(view, child.from, child.to),
+                  (node) => insertNode(view, node, child.to),
                 ),
                 side: 1,
               });
