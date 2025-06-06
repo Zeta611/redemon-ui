@@ -28,7 +28,7 @@ type SketchPaneProps = {
   locked: boolean;
   setLocked: (locked: boolean) => void;
   addAction: (hole: number) => void;
-  addEdit: (edit: Edit) => void;
+  addEdit: (path: number[], edit: Edit) => void;
 };
 
 export default function SketchPane({

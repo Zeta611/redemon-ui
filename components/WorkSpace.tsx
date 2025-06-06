@@ -69,12 +69,12 @@ export default function WorkSpace() {
     );
   }
 
-  function addEditToTimeline(index: number, edit: Edit) {
+  function addEditToTimeline(index: number, path: number[], edit: Edit) {
     // NOTE: Without functional updates, state (mysteriously) does not update correctly...
     setTimelines((timelines) =>
       timelines.map((timeline, i) => {
         if (i === index) {
-          return [...timeline, { kind: "Edit", edit }];
+          return [...timeline, { kind: "Edit", path, edit }];
         }
         return timeline;
       }),
@@ -93,9 +93,9 @@ export default function WorkSpace() {
     }
   }
 
-  function addEdit(edit: Edit) {
+  function addEdit(path: number[], edit: Edit) {
     if (workingTimeline !== null) {
-      addEditToTimeline(workingTimeline, edit);
+      addEditToTimeline(workingTimeline, path, edit);
     }
   }
 

@@ -33,6 +33,7 @@ export type TimelineItem =
     }
   | {
       kind: "Edit";
+      path: number[];
       edit: Edit;
     }
   | {
@@ -93,7 +94,7 @@ export default function Timeline({
                   key={index}
                   className="rounded-lg border-3 border-emerald-600 bg-emerald-200 p-1"
                 >
-                  ✏️ {item.edit.kind}
+                  ✏️ {item.edit.kind}@{item.path.join("/")}
                 </li>
               );
             default:

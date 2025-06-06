@@ -211,93 +211,107 @@ function removeNode(view: EditorView, from: number, to: number) {
   return true;
 }
 
-function editDecorations(view: EditorView, addEdit: (edit: Edit) => void) {
+function editDecorations(
+  view: EditorView,
+  addEdit: (path: number[], edit: Edit) => void,
+) {
   const widgets: Range<Decoration>[] = [];
+  const currentPath: number[] = [];
+  let currentIndex = 0;
   let cnt = 0;
 
-  for (const { from, to } of view.visibleRanges) {
-    syntaxTree(view.state).iterate({
-      from,
-      to,
-      enter: (node) => {
-        // console.log(node.name, view.state.sliceDoc(node.from, node.to));
-        switch (node.name) {
-          case "JSXText": {
-            let text = view.state.sliceDoc(node.from, node.to);
-            if (text.trim() === "") {
-              break;
-            }
-            const leadingSpaceLen = text.match(/^\s+/)?.[0]?.length ?? 0;
-            const trailingSpaceLen = text.match(/\s+$/)?.[0]?.length ?? 0;
-            const from = node.from + leadingSpaceLen;
-            const to = node.to - trailingSpaceLen;
-            text = text.slice(leadingSpaceLen, text.length - trailingSpaceLen);
-            const deco = Decoration.replace({
-              widget: new TextReplaceWidget(++cnt, text, (value) => {
-                replaceText(view, from, to, value);
-                addEdit({ kind: "TextReplace", text: value });
-              }),
-              side: 1,
-            });
-            widgets.push(deco.range(from, to));
+  syntaxTree(view.state).iterate({
+    enter: (node) => {
+      // console.log(node.name, view.state.sliceDoc(node.from, node.to));
+      switch (node.name) {
+        case "JSXOpenTag":
+          currentPath.push(currentIndex);
+          currentIndex = 0;
+          break;
+        case "JSXCloseTag":
+          if (currentPath.length === 0) {
+            throw new Error("Invalid JSX structure");
+          }
+          currentIndex = currentPath.pop()! + 1;
+          break;
+        case "JSXText": {
+          let text = view.state.sliceDoc(node.from, node.to);
+          if (text.trim() === "") {
             break;
           }
-          case "JSXAttribute": {
-            const attribute = view.state.sliceDoc(node.from, node.to);
-            const [identifier, value] = attribute.split("=");
-            const from = node.from + identifier.length + 1; // +1 for the '='
-            const to = node.to;
-            const deco = Decoration.replace({
-              widget: new AttributeReplaceWidget(
+          const leadingSpaceLen = text.match(/^\s+/)?.[0]?.length ?? 0;
+          const trailingSpaceLen = text.match(/\s+$/)?.[0]?.length ?? 0;
+          const from = node.from + leadingSpaceLen;
+          const to = node.to - trailingSpaceLen;
+          text = text.slice(leadingSpaceLen, text.length - trailingSpaceLen);
+          const path = [...currentPath];
+          const deco = Decoration.replace({
+            widget: new TextReplaceWidget(++cnt, text, (value) => {
+              replaceText(view, from, to, value);
+              addEdit(path, { kind: "TextReplace", text: value });
+            }),
+            side: 1,
+          });
+          widgets.push(deco.range(from, to));
+          break;
+        }
+        case "JSXAttribute": {
+          const attribute = view.state.sliceDoc(node.from, node.to);
+          const [identifier, value] = attribute.split("=");
+          const from = node.from + identifier.length + 1; // +1 for the '='
+          const to = node.to;
+          const path = [...currentPath];
+          const deco = Decoration.replace({
+            widget: new AttributeReplaceWidget(
+              ++cnt,
+              identifier,
+              value,
+              (value) => {
+                replaceText(view, from, to, value);
+                addEdit(path, { kind: "AttributeReplace", identifier, value });
+              },
+            ),
+            side: 1,
+          });
+          widgets.push(deco.range(from, to));
+          break;
+        }
+        case "JSXElement": {
+          const children = node.node.getChildren("JSXElement");
+          const path = [...currentPath, currentIndex];
+          children.forEach((child, index) => {
+            const deco = Decoration.widget({
+              widget: new NodeEditWidget(
                 ++cnt,
-                identifier,
-                value,
-                (value) => {
-                  replaceText(view, from, to, value);
-                  addEdit({ kind: "AttributeReplace", identifier, value });
+                () => {
+                  copyNode(view, child.from, child.to);
+                  addEdit(path, { kind: "NodeCopy", nodeIdx: index });
+                },
+                () => {
+                  removeNode(view, child.from, child.to);
+                  addEdit(path, { kind: "NodeDelete", nodeIdx: index });
+                },
+                (node) => {
+                  insertNode(view, node, child.to);
+                  addEdit(path, { kind: "NodeInsert", nodeIdx: index, node });
                 },
               ),
               side: 1,
             });
-            widgets.push(deco.range(from, to));
-
-            break;
-          }
-          case "JSXElement": {
-            const children = node.node.getChildren("JSXElement");
-            children.forEach((child) => {
-              const deco = Decoration.widget({
-                widget: new NodeEditWidget(
-                  ++cnt,
-                  () => {
-                    copyNode(view, child.from, child.to);
-                    addEdit({ kind: "NodeCopy", nodeIdx: -1 });
-                  },
-                  () => {
-                    removeNode(view, child.from, child.to);
-                    addEdit({ kind: "NodeDelete", nodeIdx: -1 });
-                  },
-                  (node) => {
-                    insertNode(view, node, child.to);
-                    addEdit({ kind: "NodeInsert", nodeIdx: -1, node });
-                  },
-                ),
-                side: 1,
-              });
-              widgets.push(deco.range(child.to));
-            });
-            break;
-          }
+            widgets.push(deco.range(child.to));
+          });
+          break;
         }
-      },
-    });
-  }
+      }
+    },
+  });
+
   // widgets should be sorted by from or the plugin will crash
   widgets.sort((a, b) => a.from - b.from);
   return Decoration.set(widgets);
 }
 
-function editPlugin(addEdit: (edit: Edit) => void) {
+function editPlugin(addEdit: (path: number[], edit: Edit) => void) {
   return ViewPlugin.fromClass(
     class {
       decorations: DecorationSet;
