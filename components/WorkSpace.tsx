@@ -8,7 +8,7 @@ import {
 import TimelinePanes from "@/components/TimelinesPane";
 import SketchPane from "@/components/SketchPane";
 import SynthPane from "@/components/SynthPane";
-import { type Timeline } from "@/components/Timeline";
+import { Edit, type Timeline } from "@/components/Timeline";
 
 const sample = `<div className="flex flex-col items-center">
   <div className="font-semibold text-lg">
@@ -27,7 +27,7 @@ export default function WorkSpace() {
   const [sketch, setSketch] = useState(sample);
   const [locked, setLocked] = useState(false);
   const [timelines, setTimelines] = useState<Timeline[]>([[]]);
-  const [workingTimeline, setWorkingTimeline] = useState<number | null>(null);
+  const [workingTimeline, setWorkingTimeline] = useState<number | null>(0);
 
   function addTimeline() {
     setTimelines([...timelines, []]);
@@ -47,17 +47,6 @@ export default function WorkSpace() {
     setWorkingTimeline(null);
   }
 
-  function addActionToTimeline(index: number, action: number) {
-    setTimelines(
-      timelines.map((timeline, i) => {
-        if (i === index) {
-          return [...timeline, { kind: "Action", action }];
-        }
-        return timeline;
-      }),
-    );
-  }
-
   // function addSketchToTimeline(index: number, sketch: string) {
   //   setTimelines(
   //     timelines.map((timeline, i) => {
@@ -69,10 +58,27 @@ export default function WorkSpace() {
   //   );
   // }
 
-  function addAction(hole: number) {
-    if (workingTimeline !== null) {
-      addActionToTimeline(workingTimeline, hole);
-    }
+  function addActionToTimeline(index: number, action: number) {
+    setTimelines((timelines) =>
+      timelines.map((timeline, i) => {
+        if (i === index) {
+          return [...timeline, { kind: "Action", action }];
+        }
+        return timeline;
+      }),
+    );
+  }
+
+  function addEditToTimeline(index: number, edit: Edit) {
+    // NOTE: Without functional updates, state (mysteriously) does not update correctly...
+    setTimelines((timelines) =>
+      timelines.map((timeline, i) => {
+        if (i === index) {
+          return [...timeline, { kind: "Edit", edit }];
+        }
+        return timeline;
+      }),
+    );
   }
 
   // function addSketch(sketch: string) {
@@ -80,6 +86,18 @@ export default function WorkSpace() {
   //     addSketchToTimeline(workingTimeline, sketch);
   //   }
   // }
+
+  function addAction(hole: number) {
+    if (workingTimeline !== null) {
+      addActionToTimeline(workingTimeline, hole);
+    }
+  }
+
+  function addEdit(edit: Edit) {
+    if (workingTimeline !== null) {
+      addEditToTimeline(workingTimeline, edit);
+    }
+  }
 
   // const [isRecording, setIsRecording] = useState(false);
 
@@ -94,6 +112,7 @@ export default function WorkSpace() {
               locked={locked}
               setLocked={setLocked}
               addAction={addAction}
+              addEdit={addEdit}
             />
           </ResizablePanel>
           <ResizableHandle className="bg-orange-200" withHandle />

@@ -10,6 +10,7 @@ import { Range } from "@codemirror/state";
 import { syntaxTree } from "@codemirror/language";
 import { tw } from "./utils";
 import { getIndentation, maxHoleLabel } from "./sketch";
+import { Edit } from "@/components/Timeline";
 
 class TextReplaceWidget extends WidgetType {
   constructor(
@@ -30,7 +31,7 @@ class TextReplaceWidget extends WidgetType {
     wrap.className = tw`inline-flex items-center gap-0.5 pl-1`;
 
     const textarea = wrap.appendChild(document.createElement("div"));
-    textarea.className = tw`z-0 h-4 resize-x overflow-hidden rounded bg-orange-100 px-1 text-black hover:bg-orange-200 focus:bg-orange-200 focus:outline-1 focus:outline-orange-500`;
+    textarea.className = tw`z-0 h-4 resize overflow-hidden rounded bg-orange-100 px-1 text-black hover:bg-orange-200 focus:bg-orange-200 focus:outline-1 focus:outline-orange-500`;
     textarea.setAttribute("contenteditable", "plaintext-only");
     textarea.textContent = this.value;
 
@@ -68,7 +69,7 @@ class AttributeReplaceWidget extends WidgetType {
     wrap.className = tw`inline-flex items-center gap-0.5 px-0.5`;
 
     const textarea = wrap.appendChild(document.createElement("div"));
-    textarea.className = tw`z-0 h-4 resize-x overflow-hidden rounded bg-orange-100 px-1 text-black hover:bg-orange-200 focus:bg-orange-200 focus:outline-1 focus:outline-orange-500`;
+    textarea.className = tw`z-0 h-4 resize overflow-hidden rounded bg-orange-100 px-1 text-black hover:bg-orange-200 focus:bg-orange-200 focus:outline-1 focus:outline-orange-500`;
     textarea.setAttribute("contenteditable", "plaintext-only");
     textarea.textContent = this.value;
 
@@ -210,7 +211,7 @@ function removeNode(view: EditorView, from: number, to: number) {
   return true;
 }
 
-function editDecorations(view: EditorView) {
+function editDecorations(view: EditorView, addEdit: (edit: Edit) => void) {
   const widgets: Range<Decoration>[] = [];
   let cnt = 0;
 
@@ -232,9 +233,10 @@ function editDecorations(view: EditorView) {
             const to = node.to - trailingSpaceLen;
             text = text.slice(leadingSpaceLen, text.length - trailingSpaceLen);
             const deco = Decoration.replace({
-              widget: new TextReplaceWidget(++cnt, text, (value) =>
-                replaceText(view, from, to, value),
-              ),
+              widget: new TextReplaceWidget(++cnt, text, (value) => {
+                replaceText(view, from, to, value);
+                addEdit({ kind: "TextReplace", text: value });
+              }),
               side: 1,
             });
             widgets.push(deco.range(from, to));
@@ -252,6 +254,7 @@ function editDecorations(view: EditorView) {
                 value,
                 (value) => {
                   replaceText(view, from, to, value);
+                  addEdit({ kind: "AttributeReplace", identifier, value });
                 },
               ),
               side: 1,
@@ -266,9 +269,18 @@ function editDecorations(view: EditorView) {
               const deco = Decoration.widget({
                 widget: new NodeEditWidget(
                   ++cnt,
-                  () => copyNode(view, child.from, child.to),
-                  () => removeNode(view, child.from, child.to),
-                  (node) => insertNode(view, node, child.to),
+                  () => {
+                    copyNode(view, child.from, child.to);
+                    addEdit({ kind: "NodeCopy", nodeIdx: -1 });
+                  },
+                  () => {
+                    removeNode(view, child.from, child.to);
+                    addEdit({ kind: "NodeDelete", nodeIdx: -1 });
+                  },
+                  (node) => {
+                    insertNode(view, node, child.to);
+                    addEdit({ kind: "NodeInsert", nodeIdx: -1, node });
+                  },
                 ),
                 side: 1,
               });
@@ -285,13 +297,13 @@ function editDecorations(view: EditorView) {
   return Decoration.set(widgets);
 }
 
-function editPlugin() {
+function editPlugin(addEdit: (edit: Edit) => void) {
   return ViewPlugin.fromClass(
     class {
       decorations: DecorationSet;
 
       constructor(view: EditorView) {
-        this.decorations = editDecorations(view);
+        this.decorations = editDecorations(view, addEdit);
       }
 
       update(update: ViewUpdate) {
@@ -300,7 +312,7 @@ function editPlugin() {
           update.viewportChanged ||
           syntaxTree(update.startState) != syntaxTree(update.state)
         ) {
-          this.decorations = editDecorations(update.view);
+          this.decorations = editDecorations(update.view, addEdit);
         }
       }
     },

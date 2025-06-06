@@ -5,6 +5,7 @@ import { javascript } from "@codemirror/lang-javascript";
 import { EditorView } from "@codemirror/view";
 import root from "react-shadow";
 import { useEffect, useRef } from "react";
+import { type Edit } from "./Timeline";
 import {
   ResizableHandle,
   ResizablePanel,
@@ -27,6 +28,7 @@ type SketchPaneProps = {
   locked: boolean;
   setLocked: (locked: boolean) => void;
   addAction: (hole: number) => void;
+  addEdit: (edit: Edit) => void;
 };
 
 export default function SketchPane({
@@ -35,6 +37,7 @@ export default function SketchPane({
   locked,
   setLocked,
   addAction,
+  addEdit,
 }: SketchPaneProps) {
   const shadowRoot = useRef<HTMLDivElement>(null);
 
@@ -46,11 +49,11 @@ export default function SketchPane({
     })();
   }, [sketch]);
 
-  try {
-    console.log(parse(sketch.trim()));
-  } catch (e) {
-    console.error(e);
-  }
+  // try {
+  //   console.log(parse(sketch.trim()));
+  // } catch (e) {
+  //   console.error(e);
+  // }
 
   return (
     <LiveProvider code={replaceHoles(sketch)} scope={{ addAction }}>
@@ -114,7 +117,7 @@ export default function SketchPane({
                 githubLight,
                 EditorView.lineWrapping,
                 EditorView.editable.of(!locked),
-              ].concat(locked ? [editPlugin()] : [])}
+              ].concat(locked ? [editPlugin(addEdit)] : [])}
               onChange={setSketch}
               height="100%"
               className="h-full text-sm"
