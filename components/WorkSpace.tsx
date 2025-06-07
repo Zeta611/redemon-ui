@@ -167,18 +167,18 @@ export default function WorkSpace() {
               addEdit={addEdit}
             />
           </ResizablePanel>
-          <ResizableHandle className="bg-orange-200" withHandle />
+          <ResizableHandle withHandle />
           <ResizablePanel>
             <SynthPane synthesized={synthesized} />
           </ResizablePanel>
         </ResizablePanelGroup>
       </ResizablePanel>
-      <ResizableHandle className="bg-orange-200" withHandle />
+      <ResizableHandle withHandle />
       <ResizablePanel
         defaultSize={25}
         minSize={25}
         collapsible
-        collapsedSize={2}
+        collapsedSize={4}
       >
         <TimelinePanes
           locked={locked}

@@ -14,7 +14,7 @@ import {
 export default function Bar() {
   return (
     <div className="dots-dense dots">
-      <div className="flex items-center gap-7 bg-linear-to-l to-orange-50 to-85% px-3 py-2">
+      <div className="to-accent flex items-center gap-7 bg-linear-to-l to-85% px-3 py-2">
         <Link href="/" className="font-heading text-2xl">
           ReDemon UI
         </Link>

@@ -31,7 +31,9 @@ export default function TimelinesPane({
       <div
         className={cn(
           "flex h-full flex-col",
-          locked ? "bg-orange-50" : "pointer-events-none bg-stone-100",
+          locked
+            ? "bg-accent text-accent-foreground"
+            : "bg-muted text-muted-foreground pointer-events-none",
         )}
       >
         <div className="flex h-8 items-center justify-between px-2">
@@ -57,7 +59,12 @@ export default function TimelinesPane({
             </Tooltip>
           </div>
         </div>
-        <div className="flex grow flex-col gap-2 overflow-y-auto p-3 pb-17">
+        <div
+          className={cn(
+            "flex grow flex-col gap-2 overflow-y-auto p-3 pb-17",
+            locked || "opacity-60",
+          )}
+        >
           <ol className="flex flex-col gap-2">
             {timelines.map((timeline, index) => (
               <li key={index}>
@@ -76,14 +83,24 @@ export default function TimelinesPane({
         <div className="relative">
           <div className="absolute right-3 bottom-3 left-3 flex h-12 gap-3">
             <Button
-              className="h-full flex-1 bg-orange-500/80 backdrop-blur-sm hover:bg-orange-500"
+              variant="default"
+              className={cn(
+                "text-primary-foreground h-full flex-1 backdrop-blur-sm",
+                locked ? "bg-primary/80 hover:bg-primary" : "bg-primary/60",
+              )}
               onClick={addTimeline}
             >
               <Plus />
               <span className="font-bold">Add Timeline</span>
             </Button>
             <Button
-              className="h-full flex-1 bg-purple-500/80 backdrop-blur-sm hover:bg-purple-500"
+              variant="secondary"
+              className={cn(
+                "text-secondary-foreground h-full flex-1 backdrop-blur-sm",
+                locked
+                  ? "bg-secondary/80 hover:bg-secondary"
+                  : "bg-secondary/60",
+              )}
               onClick={synthesize}
             >
               <WandSparkles />

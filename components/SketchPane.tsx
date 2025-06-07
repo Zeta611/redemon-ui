@@ -84,7 +84,6 @@ export default function SketchPane({
                         ✍️
                       </Label>
                       <Switch
-                        className="data-[state=checked]:bg-orange-500 data-[state=unchecked]:bg-stone-300"
                         id="lock-switch"
                         checked={locked}
                         onCheckedChange={setLocked}
@@ -102,7 +101,7 @@ export default function SketchPane({
                     </p>
                   </TooltipContent>
                 </Tooltip>
-                <Separator className="bg-orange-200" orientation="vertical" />
+                <Separator orientation="vertical" />
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
@@ -120,7 +119,7 @@ export default function SketchPane({
                 </Tooltip>
               </div>
             </div>
-            <Separator className="bg-orange-200" />
+            <Separator />
             <CodeMirror
               value={sketch}
               extensions={extensions}
@@ -130,12 +129,12 @@ export default function SketchPane({
             />
           </div>
         </ResizablePanel>
-        <ResizableHandle className="bg-orange-200" withHandle={false} />
+        <ResizableHandle withHandle={false} />
         <ResizablePanel className="dots-wide dots flex items-center justify-center">
           <root.div
             ref={shadowRoot}
             className={cn(
-              "bg-background rounded-lg border-3 border-orange-300 p-3",
+              "bg-background border-ring rounded-lg border-3 p-3",
               locked || "pointer-events-none",
             )}
           >

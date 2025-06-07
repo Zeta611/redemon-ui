@@ -20,10 +20,8 @@ export default function Timeline({
   return (
     <div
       className={cn(
-        "flex h-12 items-center gap-2 rounded-lg border-3 p-1 shadow-sm",
-        isWorking
-          ? "border-orange-500 bg-orange-200"
-          : "border-stone-300 bg-orange-100",
+        "bg-border flex h-12 items-center gap-2 rounded-lg border-3 p-1 shadow-sm",
+        isWorking ? "border-primary" : "opacity-55",
       )}
       onClick={setIsWorking}
     >
@@ -64,7 +62,12 @@ export default function Timeline({
         })}
       </ol>
       <div className="flex-1" />
-      <Button variant="ghost" size="icon" onClick={removeTimeline}>
+      <Button
+        variant="ghost"
+        className="hover:text-destructive hover:bg-destructive/20 text-destructive"
+        size="icon"
+        onClick={removeTimeline}
+      >
         <CircleX className="size-6" />
       </Button>
     </div>

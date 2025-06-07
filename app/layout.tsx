@@ -38,7 +38,7 @@ export default function RootLayout({
         className={`${playfair.variable} ${playfairDisplaySC.variable} ${montserrat.variable} flex h-screen w-screen flex-col font-sans antialiased`}
       >
         <Bar />
-        <Separator className="bg-orange-200" />
+        <Separator />
         {children}
         <Analytics />
       </body>

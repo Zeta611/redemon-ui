@@ -75,7 +75,7 @@ export default function SynthPane({ synthesized }: SynthPaneProps) {
                 </Tooltip>
               </div>
             </div>
-            <Separator className="bg-orange-200" />
+            <Separator />
             <CodeMirror
               value={code}
               placeholder="Demonstrate and press 'Synthesize!' in the Timelines pane to see the synthesized React code here."
@@ -86,11 +86,11 @@ export default function SynthPane({ synthesized }: SynthPaneProps) {
             />
           </div>
         </ResizablePanel>
-        <ResizableHandle className="bg-orange-200" withHandle={false} />
+        <ResizableHandle withHandle={false} />
         <ResizablePanel className="dots-wide dots flex items-center justify-center">
           <root.div
             ref={shadowRoot}
-            className="bg-background rounded-lg border-3 border-orange-300 p-3"
+            className="bg-background border-ring rounded-lg border-3 p-3"
           >
             <LivePreview />
           </root.div>
