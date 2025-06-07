@@ -16,6 +16,7 @@ import {
   constReplace,
   edit,
   index,
+  int,
   nodeCopy,
   nodeDelete,
   nodeInsert,
@@ -233,18 +234,26 @@ function editDecorations(
 
   syntaxTree(view.state).iterate({
     enter: (node) => {
-      // console.log(node.name, view.state.sliceDoc(node.from, node.to));
+      console.debug(
+        "editDecorations:",
+        node.name,
+        node.from,
+        node.to,
+        view.state.sliceDoc(node.from, node.to),
+      );
       switch (node.name) {
         case "JSXOpenTag":
           currentPath.push(currentIndex);
           currentIndex = 0;
           break;
+
         case "JSXCloseTag":
           if (currentPath.length === 0) {
             throw new Error("Invalid JSX structure");
           }
           currentIndex = currentPath.pop()! + 1;
           break;
+
         case "JSXText": {
           let text = view.state.sliceDoc(node.from, node.to);
           if (text.trim() === "") {
@@ -259,13 +268,40 @@ function editDecorations(
           const deco = Decoration.replace({
             widget: new TextReplaceWidget(++cnt, text, (value) => {
               replaceText(view, from, to, value);
-              addEditRef.current(path, constReplace(string(value)));
+              if (value.startsWith("{") && value.endsWith("}")) {
+                value = value.slice(1, -1).trim();
+                addEditRef.current(path, constReplace(int(Number(value))));
+              } else {
+                addEditRef.current(path, constReplace(string(value)));
+              }
             }),
             side: 1,
           });
           widgets.push(deco.range(from, to));
           break;
         }
+
+        case "JSXEscape": {
+          const from = node.from;
+          const to = node.to;
+          const text = view.state.sliceDoc(from, to);
+          const path = [...currentPath];
+          const deco = Decoration.replace({
+            widget: new TextReplaceWidget(++cnt, text, (value) => {
+              replaceText(view, from, to, value);
+              if (value.startsWith("{") && value.endsWith("}")) {
+                value = value.slice(1, -1).trim();
+                addEditRef.current(path, constReplace(int(Number(value))));
+              } else {
+                addEditRef.current(path, constReplace(string(value)));
+              }
+            }),
+            side: 1,
+          });
+          widgets.push(deco.range(from, to));
+          break;
+        }
+
         case "JSXAttribute": {
           const attribute = view.state.sliceDoc(node.from, node.to);
           const [identifier, value] = attribute.split("=");
@@ -290,6 +326,7 @@ function editDecorations(
           widgets.push(deco.range(from, to));
           break;
         }
+
         case "JSXElement": {
           const children = node.node.getChildren("JSXElement");
           const path = [...currentPath, currentIndex];

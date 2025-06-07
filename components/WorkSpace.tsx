@@ -21,7 +21,7 @@ import { fromArray } from "@/shared/utils";
 
 const sample = `<div className="flex flex-col items-center">
   <div className="font-semibold text-lg">
-    0
+  {0}
   </div>
   <button
     className="border-none bg-stone-500 text-white px-2 py-1 rounded"

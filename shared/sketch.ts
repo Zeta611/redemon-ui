@@ -44,7 +44,7 @@ export async function format(sketch: string, removeLastSemicolon = true) {
       return formatted.trimEnd();
     }
   } catch (e) {
-    console.warn("Error formatting sketch:", e);
+    console.error("Error formatting sketch:", e);
     return sketch;
   }
 }
