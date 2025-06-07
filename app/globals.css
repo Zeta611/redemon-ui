@@ -131,14 +131,16 @@
 
   .dots-dense {
     --dot-spacing: 14px;
+    --dot-size: 1.5px;
   }
 
   .dots-wide {
     --dot-spacing: 32px;
+    --dot-size: 1px;
   }
 
   .dots {
-    background-image: radial-gradient(#EA580C 1px, transparent 0px);
+    background-image: radial-gradient(#EA580C var(--dot-size, 1px), transparent 0px);
     background-repeat: repeat;
     background-size: var(--dot-spacing, 14px) var(--dot-spacing, 14px);
     background-position: center;

@@ -178,7 +178,7 @@ export default function WorkSpace() {
         defaultSize={25}
         minSize={25}
         collapsible
-        collapsedSize={4}
+        collapsedSize={8}
       >
         <TimelinePanes
           locked={locked}

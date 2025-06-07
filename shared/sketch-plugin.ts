@@ -48,7 +48,7 @@ class TextReplaceWidget extends WidgetType {
     textarea.textContent = this.value;
 
     const submitButton = wrap.appendChild(document.createElement("button"));
-    submitButton.className = tw`rounded bg-orange-200 p-0.5 text-orange-900 hover:bg-orange-400`;
+    submitButton.className = tw`rounded bg-orange-200 p-0.5 text-orange-900 shadow-xs/75 inset-shadow-2xs/90 inset-shadow-white hover:bg-orange-300`;
     submitButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="10.5" height="10.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check-icon lucide-check"><path d="M20 6 9 17l-5-5"/></svg>`;
     submitButton.onclick = () => {
       const value = textarea.textContent?.trim();
@@ -86,7 +86,7 @@ class AttributeReplaceWidget extends WidgetType {
     textarea.textContent = this.value;
 
     const submitButton = wrap.appendChild(document.createElement("button"));
-    submitButton.className = tw`rounded bg-orange-200 p-0.5 text-orange-900 hover:bg-orange-400`;
+    submitButton.className = tw`rounded bg-orange-200 p-0.5 text-orange-900 shadow-xs/75 inset-shadow-2xs/90 inset-shadow-white hover:bg-orange-300`;
     submitButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="10.5" height="10.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check-icon lucide-check"><path d="M20 6 9 17l-5-5"/></svg>`;
     submitButton.onclick = () => {
       const value = textarea.textContent?.trim();
@@ -135,20 +135,20 @@ class NodeEditWidget extends WidgetType {
     wrap.className = tw`inline-flex flex-col gap-1 pl-0.5`;
 
     const buttons = wrap.appendChild(document.createElement("div"));
-    buttons.className = tw`flex flex-row items-center gap-0.5`;
+    buttons.className = tw`flex flex-row items-center gap-1`;
 
     const removeButton = buttons.appendChild(document.createElement("button"));
-    removeButton.className = tw`rounded bg-red-200 p-0.5 text-red-900 hover:bg-red-400`;
+    removeButton.className = tw`rounded bg-red-300 p-0.5 text-red-900 shadow-xs/75 inset-shadow-2xs/90 inset-shadow-white hover:bg-red-400`;
     removeButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="10.5" height="10.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-square-minus-icon lucide-square-minus"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M8 12h8"/></svg>`;
     removeButton.onclick = this.onRemove;
 
     const copyButton = buttons.appendChild(document.createElement("button"));
-    copyButton.className = tw`rounded bg-emerald-200 p-0.5 text-emerald-900 hover:bg-emerald-400`;
+    copyButton.className = tw`rounded bg-emerald-300 p-0.5 text-emerald-900 shadow-xs/75 inset-shadow-2xs/90 inset-shadow-white hover:bg-emerald-400`;
     copyButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="10.5" height="10.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-copy-plus-icon lucide-copy-plus"><line x1="15" x2="15" y1="12" y2="18"/><line x1="12" x2="18" y1="15" y2="15"/><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>`;
     copyButton.onclick = this.onCopy;
 
     const insertButton = buttons.appendChild(document.createElement("button"));
-    insertButton.className = tw`rounded bg-amber-200 p-0.5 text-amber-900 hover:bg-amber-400`;
+    insertButton.className = tw`rounded bg-amber-300 p-0.5 text-amber-900 shadow-xs/75 inset-shadow-2xs/90 inset-shadow-white hover:bg-amber-400`;
     insertButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="10.5" height="10.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-square-code-icon lucide-square-code"><path d="m10 9-3 3 3 3"/><path d="m14 15 3-3-3-3"/><rect x="3" y="3" width="18" height="18" rx="2"/></svg>`;
     insertButton.onclick = () => {
       insertLine.classList.toggle("hidden");
@@ -164,7 +164,7 @@ class NodeEditWidget extends WidgetType {
     const submitInsert = insertLine.appendChild(
       document.createElement("button"),
     );
-    submitInsert.className = tw`rounded bg-amber-200 p-0.5 text-amber-900 hover:bg-amber-400`;
+    submitInsert.className = tw`rounded bg-amber-300 p-0.5 text-amber-900 shadow-xs/75 inset-shadow-2xs/90 inset-shadow-white hover:bg-amber-400`;
     submitInsert.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="10.5" height="10.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check-icon lucide-check"><path d="M20 6 9 17l-5-5"/></svg>`;
     submitInsert.onclick = () => {
       const value = insertArea.value.trim();

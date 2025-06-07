@@ -85,7 +85,7 @@ export default function TimelinesPane({
             <Button
               variant="default"
               className={cn(
-                "text-primary-foreground h-full flex-1 backdrop-blur-sm",
+                "text-primary-foreground h-full flex-1 shadow-md/35 inset-shadow-sm/80 inset-shadow-white backdrop-blur-sm",
                 locked ? "bg-primary/80 hover:bg-primary" : "bg-primary/60",
               )}
               onClick={addTimeline}
@@ -96,7 +96,7 @@ export default function TimelinesPane({
             <Button
               variant="secondary"
               className={cn(
-                "text-secondary-foreground h-full flex-1 backdrop-blur-sm",
+                "text-secondary-foreground h-full flex-1 shadow-md/35 inset-shadow-sm/80 inset-shadow-white backdrop-blur-sm",
                 locked
                   ? "bg-secondary/80 hover:bg-secondary"
                   : "bg-secondary/60",

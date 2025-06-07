@@ -20,12 +20,14 @@ export default function Timeline({
   return (
     <div
       className={cn(
-        "bg-border flex h-12 items-center gap-2 rounded-lg border-3 p-1 shadow-sm",
-        isWorking ? "border-primary" : "opacity-55",
+        "bg-border flex h-13 items-center gap-2 rounded-lg p-1 shadow-md/35 inset-shadow-sm/80 inset-shadow-white",
+        isWorking
+          ? "border-primary/85 shadow-primary border-2 shadow-md/45"
+          : "opacity-55",
       )}
       onClick={setIsWorking}
     >
-      <ol className="flex items-center gap-2 overflow-x-auto">
+      <ol className="flex items-center gap-2">
         {timeline.map((item, index) => {
           console.debug("Timeline item:", item);
           switch (item.TAG) {
@@ -42,7 +44,7 @@ export default function Timeline({
               return (
                 <li
                   key={index}
-                  className="rounded-lg border-3 border-orange-600 bg-amber-500 p-1"
+                  className="rounded-lg bg-orange-500 p-1.5 shadow-sm/50 inset-shadow-xs/80 inset-shadow-white"
                 >
                   👆 {item._0.label._0}
                 </li>
@@ -51,7 +53,7 @@ export default function Timeline({
               return (
                 <li
                   key={index}
-                  className="rounded-lg border-3 border-emerald-600 bg-emerald-200 p-1"
+                  className="rounded-lg bg-emerald-500 p-1.5 shadow-sm/50 inset-shadow-xs/80 inset-shadow-white"
                 >
                   ✏️ {item._1.TAG}
                 </li>
