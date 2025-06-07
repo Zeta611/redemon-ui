@@ -4,8 +4,7 @@ import { githubLight } from "@uiw/codemirror-theme-github";
 import { javascript } from "@codemirror/lang-javascript";
 import { EditorView } from "@codemirror/view";
 import root from "react-shadow";
-import { useEffect, useRef } from "react";
-import { type Edit } from "./Timeline";
+import { useEffect, useMemo, useRef } from "react";
 import {
   ResizableHandle,
   ResizablePanel,
@@ -14,13 +13,13 @@ import {
 import { editPlugin } from "@/shared/sketch-plugin";
 import { Separator } from "@/ui/separator";
 import { Button } from "@/ui/button";
-import { parse } from "@/shared/lang.res.mjs";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/ui/tooltip";
 import { format, replaceHoles } from "@/shared/sketch";
 import { Switch } from "@/ui/switch";
 import { Label } from "@/ui/label";
 import { cn } from "@/shared/utils";
 import injectStyles from "@/shared/injectStyles";
+import { edit } from "@/shared/lang.gen";
 
 type SketchPaneProps = {
   sketch: string;
@@ -28,7 +27,7 @@ type SketchPaneProps = {
   locked: boolean;
   setLocked: (locked: boolean) => void;
   addAction: (hole: number) => void;
-  addEdit: (path: number[], edit: Edit) => void;
+  addEdit: (path: number[], edit: edit) => void;
 };
 
 export default function SketchPane({
@@ -45,18 +44,30 @@ export default function SketchPane({
     (async () => {
       const root = shadowRoot.current?.shadowRoot;
       if (!root) return;
-      await injectStyles(replaceHoles(sketch), root);
+      await injectStyles(
+        replaceHoles(sketch, "() => { addAction($1); }"),
+        root,
+      );
     })();
   }, [sketch]);
 
-  // try {
-  //   console.log(parse(sketch.trim()));
-  // } catch (e) {
-  //   console.error(e);
-  // }
+  const addEditRef = useRef(addEdit);
+  addEditRef.current = addEdit;
+  const extensions = useMemo(() => {
+    console.debug("Updating extensions for SketchPane");
+    return [
+      javascript({ jsx: true }),
+      githubLight,
+      EditorView.lineWrapping,
+      EditorView.editable.of(!locked),
+    ].concat(locked ? [editPlugin(addEditRef)] : []);
+  }, [locked, addEditRef]);
 
   return (
-    <LiveProvider code={replaceHoles(sketch)} scope={{ addAction }}>
+    <LiveProvider
+      code={replaceHoles(sketch, "() => { addAction($1); }")}
+      scope={{ addAction }}
+    >
       <ResizablePanelGroup direction="vertical">
         <ResizablePanel defaultSize={60} minSize={30}>
           <div className="flex h-full flex-col">
@@ -112,12 +123,7 @@ export default function SketchPane({
             <Separator className="bg-orange-200" />
             <CodeMirror
               value={sketch}
-              extensions={[
-                javascript({ jsx: true }),
-                githubLight,
-                EditorView.lineWrapping,
-                EditorView.editable.of(!locked),
-              ].concat(locked ? [editPlugin(addEdit)] : [])}
+              extensions={extensions}
               onChange={setSketch}
               height="100%"
               className="h-full text-sm"

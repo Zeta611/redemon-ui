@@ -1,6 +1,6 @@
 import {
   Decoration,
-  DecorationSet,
+  DecorationSet, // eslint-disable-line
   EditorView,
   ViewPlugin,
   ViewUpdate,
@@ -8,9 +8,20 @@ import {
 } from "@codemirror/view";
 import { Range } from "@codemirror/state";
 import { syntaxTree } from "@codemirror/language";
+import { RefObject } from "react";
 import { tw } from "./utils";
 import { getIndentation, maxHoleLabel } from "./sketch";
-import { Edit } from "@/components/Timeline";
+import {
+  attributeReplace,
+  constReplace,
+  edit,
+  index,
+  nodeCopy,
+  nodeDelete,
+  nodeInsert,
+  parse,
+  string,
+} from "./lang.gen";
 
 class TextReplaceWidget extends WidgetType {
   constructor(
@@ -173,14 +184,14 @@ function copyNode(view: EditorView, from: number, to: number) {
   const indent = getIndentation(sketch, to);
 
   const element = view.state.sliceDoc(from, to);
+  console.debug("Copying element", element);
+  const nextElement = element.replace(/\$\d*/g, `$${nextLabel}`);
+  console.debug("Copied new element", nextElement);
   view.dispatch({
     changes: {
       from: to,
       to: to,
-      insert:
-        "\n" +
-        " ".repeat(indent) +
-        element.replace(/\$(\d*)/g, `$${nextLabel}`),
+      insert: "\n" + " ".repeat(indent) + nextElement,
     },
   });
   return true;
@@ -213,7 +224,7 @@ function removeNode(view: EditorView, from: number, to: number) {
 
 function editDecorations(
   view: EditorView,
-  addEdit: (path: number[], edit: Edit) => void,
+  addEditRef: RefObject<(path: number[], edit: edit) => void>,
 ) {
   const widgets: Range<Decoration>[] = [];
   const currentPath: number[] = [];
@@ -248,7 +259,7 @@ function editDecorations(
           const deco = Decoration.replace({
             widget: new TextReplaceWidget(++cnt, text, (value) => {
               replaceText(view, from, to, value);
-              addEdit(path, { kind: "TextReplace", text: value });
+              addEditRef.current(path, constReplace(string(value)));
             }),
             side: 1,
           });
@@ -268,7 +279,10 @@ function editDecorations(
               value,
               (value) => {
                 replaceText(view, from, to, value);
-                addEdit(path, { kind: "AttributeReplace", identifier, value });
+                addEditRef.current(
+                  path,
+                  attributeReplace(identifier, string(value)),
+                );
               },
             ),
             side: 1,
@@ -279,21 +293,21 @@ function editDecorations(
         case "JSXElement": {
           const children = node.node.getChildren("JSXElement");
           const path = [...currentPath, currentIndex];
-          children.forEach((child, index) => {
+          children.forEach((child, idx) => {
             const deco = Decoration.widget({
               widget: new NodeEditWidget(
                 ++cnt,
                 () => {
                   copyNode(view, child.from, child.to);
-                  addEdit(path, { kind: "NodeCopy", nodeIdx: index });
+                  addEditRef.current(path, nodeCopy(index(idx)));
                 },
                 () => {
                   removeNode(view, child.from, child.to);
-                  addEdit(path, { kind: "NodeDelete", nodeIdx: index });
+                  addEditRef.current(path, nodeDelete(index(idx)));
                 },
                 (node) => {
                   insertNode(view, node, child.to);
-                  addEdit(path, { kind: "NodeInsert", nodeIdx: index, node });
+                  addEditRef.current(path, nodeInsert(index(idx), parse(node)));
                 },
               ),
               side: 1,
@@ -311,13 +325,16 @@ function editDecorations(
   return Decoration.set(widgets);
 }
 
-function editPlugin(addEdit: (path: number[], edit: Edit) => void) {
+function editPlugin(
+  addEditRef: RefObject<(path: number[], edit: edit) => void>,
+) {
+  console.debug("Creating edit plugin");
   return ViewPlugin.fromClass(
     class {
       decorations: DecorationSet;
 
       constructor(view: EditorView) {
-        this.decorations = editDecorations(view, addEdit);
+        this.decorations = editDecorations(view, addEditRef);
       }
 
       update(update: ViewUpdate) {
@@ -326,7 +343,7 @@ function editPlugin(addEdit: (path: number[], edit: Edit) => void) {
           update.viewportChanged ||
           syntaxTree(update.startState) != syntaxTree(update.state)
         ) {
-          this.decorations = editDecorations(update.view, addEdit);
+          this.decorations = editDecorations(update.view, addEditRef);
         }
       }
     },

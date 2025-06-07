@@ -1,9 +1,18 @@
 import prettier from "prettier/standalone";
-import prettierPluginBabel from "prettier/plugins/babel";
+import prettierPluginFlow from "prettier/plugins/flow";
 import prettierPluginEstree from "prettier/plugins/estree";
 
-export function replaceHoles(sketch: string) {
-  return sketch.replaceAll(/\$(\d*)/g, "() => { addAction($1); }");
+export function replaceHoles(sketch: string, replacement: string) {
+  return sketch.replaceAll(/\$(\d*)/g, replacement);
+}
+
+export function stubHoles(sketch: string) {
+  // match all`{$1}` and place them in an array
+  const matches = [...sketch.matchAll(/{\s*\$(\d*)\s*}/g)];
+  const stubs = matches
+    .map((match) => `let $${match[1]} = () => {};`)
+    .join("\n");
+  return `${stubs}\n${sketch}`;
 }
 
 export function maxHoleLabel(sketch: string) {
@@ -23,10 +32,19 @@ export function getIndentation(sketch: string, pos: number) {
   return match ? match[0].length : 0;
 }
 
-export async function format(sketch: string) {
-  const formatted = await prettier.format(sketch, {
-    parser: "babel",
-    plugins: [prettierPluginBabel, prettierPluginEstree],
-  });
-  return formatted.trimEnd().slice(0, -1); // Remove the last semicolon
+export async function format(sketch: string, removeLastSemicolon = true) {
+  try {
+    const formatted = await prettier.format(sketch, {
+      parser: "flow",
+      plugins: [prettierPluginFlow, prettierPluginEstree],
+    });
+    if (removeLastSemicolon) {
+      return formatted.trimEnd().slice(0, -1);
+    } else {
+      return formatted.trimEnd();
+    }
+  } catch (e) {
+    console.warn("Error formatting sketch:", e);
+    return sketch;
+  }
 }

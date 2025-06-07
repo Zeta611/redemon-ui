@@ -25,7 +25,7 @@ const eslintConfig = [
       "import/no-relative-packages": "error",
       "import/order": "error",
     },
-    ignores: ["**/*.bc.js", "**/*.res.mjs"],
+    ignores: ["**/*.bc.js", "**/*.res.mjs", "**/*.shim.ts", "**/*.gen.tsx"],
   },
 ];
 

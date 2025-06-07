@@ -6,6 +6,9 @@ import { javascript } from "@codemirror/lang-javascript";
 import { EditorView } from "@codemirror/view";
 import { useEffect, useRef, useState } from "react";
 import root from "react-shadow";
+import { format, stubHoles } from "@/shared/sketch";
+import { Button } from "@/ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/ui/tooltip";
 import { Separator } from "@/ui/separator";
 import {
   ResizableHandle,
@@ -14,30 +17,27 @@ import {
 } from "@/ui/resizable";
 import injectStyles from "@/shared/injectStyles";
 
-// TODO: Remove sample
-const sample = `function Counter() {
-  const [count, setCount] = useState(0);
-  return (
-    <div className="flex flex-col items-center">
-      <div className="font-semibold text-lg">
-        {count}
-      </div>
-      <button
-        className="border-none bg-stone-500 text-white px-2 py-1 rounded"
-        onClick={() => setCount(c => c + 1) }
-      >
-        Increment
-      </button>
-    </div>
-  );
-}
+const extensions = [
+  javascript({ jsx: true }),
+  githubLight,
+  EditorView.lineWrapping,
+];
 
-render(<Counter />);
-`;
+type SynthPaneProps = {
+  synthesized: string;
+};
 
-export default function SynthPane() {
+export default function SynthPane({ synthesized }: SynthPaneProps) {
   const shadowRoot = useRef<HTMLDivElement>(null);
-  const [code, setCode] = useState(sample);
+  const [code, setCode] = useState("");
+
+  useEffect(() => {
+    // Reset code if synthesized is updated
+    if (!synthesized) {
+      return;
+    }
+    (async () => setCode(await format(stubHoles(synthesized), false)))();
+  }, [synthesized]);
 
   useEffect(() => {
     (async () => {
@@ -57,16 +57,30 @@ export default function SynthPane() {
                 <span>🤖</span>
                 <span className="font-serif">Synthesized</span>
               </div>
+              <div className="flex h-4 items-center gap-3">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="size-5 text-lg"
+                      onClick={async () => setCode(await format(code, false))}
+                    >
+                      ✨
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p className="text-sm">Format</p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
             </div>
             <Separator className="bg-orange-200" />
             <CodeMirror
               value={code}
+              placeholder="Demonstrate and press 'Synthesize!' in the Timelines pane to see the synthesized React code here."
               onChange={setCode}
-              extensions={[
-                javascript({ jsx: true }),
-                githubLight,
-                EditorView.lineWrapping,
-              ]}
+              extensions={extensions}
               height="100%"
               className="h-full text-sm"
             />

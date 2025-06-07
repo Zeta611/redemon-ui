@@ -1,2 +1,4 @@
 **/*.bc.js
 **/*.res.mjs
+**/*.shim.ts
+**/*.gen.tsx

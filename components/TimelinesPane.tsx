@@ -1,18 +1,19 @@
-import { Plus } from "lucide-react";
-import { type Timeline as TimelineType } from "./Timeline";
-import { default as Timeline } from "./Timeline";
+import { Plus, WandSparkles } from "lucide-react";
+import Timeline from "./Timeline";
 import { Button } from "@/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/ui/tooltip";
 import { cn } from "@/shared/utils";
+import { timeline } from "@/shared/lang.gen";
 
 type TimelinesPaneProps = {
   locked: boolean;
-  timelines: TimelineType[];
+  timelines: timeline[];
   addTimeline: () => void;
   removeTimeline: (index: number) => void;
   resetTimelines: () => void;
   workingTimeline: number | null;
   setWorkingTimeline: (index: number | null) => void;
+  synthesize: () => void;
 };
 
 export default function TimelinesPane({
@@ -23,6 +24,7 @@ export default function TimelinesPane({
   resetTimelines,
   workingTimeline,
   setWorkingTimeline,
+  synthesize,
 }: TimelinesPaneProps) {
   return (
     <div className={cn("h-full", locked || "cursor-not-allowed")}>
@@ -72,12 +74,22 @@ export default function TimelinesPane({
           </ol>
         </div>
         <div className="relative">
-          <Button
-            className="absolute right-3 bottom-3 left-3 h-12 bg-orange-500/80 backdrop-blur-sm hover:bg-orange-500"
-            onClick={addTimeline}
-          >
-            <Plus />
-          </Button>
+          <div className="absolute right-3 bottom-3 left-3 flex h-12 gap-3">
+            <Button
+              className="h-full flex-1 bg-orange-500/80 backdrop-blur-sm hover:bg-orange-500"
+              onClick={addTimeline}
+            >
+              <Plus />
+              <span className="font-bold">Add Timeline</span>
+            </Button>
+            <Button
+              className="h-full flex-1 bg-purple-500/80 backdrop-blur-sm hover:bg-purple-500"
+              onClick={synthesize}
+            >
+              <WandSparkles />
+              <span className="font-bold">Synthesize!</span>
+            </Button>
+          </div>
         </div>
       </div>
     </div>

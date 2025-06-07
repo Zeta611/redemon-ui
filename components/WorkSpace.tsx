@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ResizableHandle,
   ResizablePanel,
@@ -8,7 +8,16 @@ import {
 import TimelinePanes from "@/components/TimelinesPane";
 import SketchPane from "@/components/SketchPane";
 import SynthPane from "@/components/SynthPane";
-import { Edit, type Timeline } from "@/components/Timeline";
+import {
+  action,
+  edit,
+  index,
+  label,
+  synthesize,
+  timeline,
+  timelineToDemoSteps,
+} from "@/shared/lang.gen";
+import { fromArray } from "@/shared/utils";
 
 const sample = `<div className="flex flex-col items-center">
   <div className="font-semibold text-lg">
@@ -16,7 +25,7 @@ const sample = `<div className="flex flex-col items-center">
   </div>
   <button
     className="border-none bg-stone-500 text-white px-2 py-1 rounded"
-    onClick={$1}
+    onClick={$0}
   >
     Increment
   </button>
@@ -26,18 +35,36 @@ const sample = `<div className="flex flex-col items-center">
 export default function WorkSpace() {
   const [sketch, setSketch] = useState(sample);
   const [locked, setLocked] = useState(false);
-  const [timelines, setTimelines] = useState<Timeline[]>([[]]);
+
+  const lockHot = useRef(false);
+  useEffect(() => {
+    lockHot.current = locked;
+  }, [locked]);
+  const lockedSketch = useRef<string | null>(null);
+  useEffect(() => {
+    if (lockHot.current) {
+      lockedSketch.current = sketch;
+      // Lock is no longer hot after sktech is locked
+      lockHot.current = false;
+    } else if (!locked) {
+      lockedSketch.current = null;
+    }
+  }, [sketch, locked]);
+
+  const [synthesized, setSynthesized] = useState("");
+
+  const [timelines, setTimelines] = useState<timeline[]>([[]]);
   const [workingTimeline, setWorkingTimeline] = useState<number | null>(0);
 
   function addTimeline() {
-    setTimelines([...timelines, []]);
+    setTimelines((timelines) => [...timelines, []]);
     setWorkingTimeline(timelines.length);
   }
 
-  function removeTimeline(index: number) {
-    setTimelines((timelines) => timelines.filter((_, i) => i !== index));
+  function removeTimeline(idx: number) {
+    setTimelines((timelines) => timelines.filter((_, i) => i !== idx));
     setTimelines((timelines) => (timelines.length === 0 ? [[]] : timelines));
-    if (workingTimeline === index) {
+    if (workingTimeline === idx) {
       setWorkingTimeline(null);
     }
   }
@@ -57,49 +84,74 @@ export default function WorkSpace() {
   //     }),
   //   );
   // }
-
-  function addActionToTimeline(index: number, action: number) {
-    setTimelines((timelines) =>
-      timelines.map((timeline, i) => {
-        if (i === index) {
-          return [...timeline, { kind: "Action", action }];
-        }
-        return timeline;
-      }),
-    );
-  }
-
-  function addEditToTimeline(index: number, path: number[], edit: Edit) {
-    // NOTE: Without functional updates, state (mysteriously) does not update correctly...
-    setTimelines((timelines) =>
-      timelines.map((timeline, i) => {
-        if (i === index) {
-          return [...timeline, { kind: "Edit", path, edit }];
-        }
-        return timeline;
-      }),
-    );
-  }
-
+  //
   // function addSketch(sketch: string) {
   //   if (workingTimeline !== null) {
   //     addSketchToTimeline(workingTimeline, sketch);
   //   }
   // }
 
+  function addActionToTimeline(idx: number, a: action) {
+    setTimelines((timelines) =>
+      timelines.map((timeline, i) =>
+        i === idx ? [...timeline, action(a)] : timeline,
+      ),
+    );
+  }
+
   function addAction(hole: number) {
     if (workingTimeline !== null) {
-      addActionToTimeline(workingTimeline, hole);
+      addActionToTimeline(workingTimeline, {
+        label: label(hole),
+        // TODO: Add support for other action types (just Input for now)
+        action_type: "Click",
+      });
     }
   }
 
-  function addEdit(path: number[], edit: Edit) {
+  function addEditToTimeline(idx: number, path: number[], e: edit) {
+    setTimelines((timelines) =>
+      timelines.map((timeline, i) =>
+        i === idx
+          ? [...timeline, edit(fromArray(path.map(index)), e)]
+          : timeline,
+      ),
+    );
+  }
+
+  function addEdit(path: number[], edit: edit) {
     if (workingTimeline !== null) {
       addEditToTimeline(workingTimeline, path, edit);
     }
   }
 
-  // const [isRecording, setIsRecording] = useState(false);
+  function synthesizeWithSketchAndTimelines() {
+    if (lockedSketch.current === null) {
+      console.error("Sketch is not locked, cannot synthesize. This is a bug.");
+      return;
+    }
+    const sketch = lockedSketch.current;
+
+    try {
+      console.info(
+        "Synthesizing with sketch and timelines:",
+        sketch,
+        timelines,
+      );
+      const demoSteps = timelineToDemoSteps([...timelines[0]]);
+      console.debug("Demo steps:", demoSteps);
+      const result = synthesize(sketch, demoSteps);
+      if (result.error) {
+        console.error("Synthesis error:", result.error);
+        return;
+      }
+
+      console.info("Synthesis result:", result.code!);
+      setSynthesized(result.code!);
+    } catch (e) {
+      console.error("Synthesis failed:", e);
+    }
+  }
 
   return (
     <ResizablePanelGroup direction="vertical">
@@ -117,7 +169,7 @@ export default function WorkSpace() {
           </ResizablePanel>
           <ResizableHandle className="bg-orange-200" withHandle />
           <ResizablePanel>
-            <SynthPane />
+            <SynthPane synthesized={synthesized} />
           </ResizablePanel>
         </ResizablePanelGroup>
       </ResizablePanel>
@@ -136,6 +188,7 @@ export default function WorkSpace() {
           resetTimelines={resetTimelines}
           workingTimeline={workingTimeline}
           setWorkingTimeline={setWorkingTimeline}
+          synthesize={synthesizeWithSketchAndTimelines}
         />
       </ResizablePanel>
     </ResizablePanelGroup>

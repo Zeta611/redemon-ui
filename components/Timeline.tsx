@@ -1,51 +1,11 @@
 import { CircleX } from "lucide-react";
 import { Button } from "@/ui/button";
 import { cn } from "@/shared/utils";
-
-export type Edit =
-  | {
-      kind: "NodeCopy";
-      nodeIdx: number;
-    }
-  | {
-      kind: "NodeDelete";
-      nodeIdx: number;
-    }
-  | {
-      kind: "NodeInsert";
-      nodeIdx: number;
-      node: string;
-    }
-  | {
-      kind: "TextReplace";
-      text: string;
-    }
-  | {
-      kind: "AttributeReplace";
-      identifier: string;
-      value: string;
-    };
-
-export type TimelineItem =
-  | {
-      kind: "Action";
-      action: number;
-    }
-  | {
-      kind: "Edit";
-      path: number[];
-      edit: Edit;
-    }
-  | {
-      kind: "Sketch";
-      sketch: string;
-    };
-
-export type Timeline = TimelineItem[];
+import { timeline } from "@/shared/lang.gen";
 
 type TimelineProps = {
   className?: string;
-  timeline: Timeline;
+  timeline: timeline;
   removeTimeline: () => void;
   isWorking: boolean;
   setIsWorking: () => void;
@@ -69,23 +29,24 @@ export default function Timeline({
     >
       <ol className="flex items-center gap-2 overflow-x-auto">
         {timeline.map((item, index) => {
-          switch (item.kind) {
-            case "Sketch":
-              return (
-                <li
-                  key={index}
-                  className="rounded-md border-3 border-fuchsia-800 bg-fuchsia-600 p-1"
-                >
-                  🎨
-                </li>
-              );
+          console.debug("Timeline item:", item);
+          switch (item.TAG) {
+            // case "Sketch":
+            //   return (
+            //     <li
+            //       key={index}
+            //       className="rounded-md border-3 border-fuchsia-800 bg-fuchsia-600 p-1"
+            //     >
+            //       🎨
+            //     </li>
+            //   );
             case "Action":
               return (
                 <li
                   key={index}
                   className="rounded-lg border-3 border-orange-600 bg-amber-500 p-1"
                 >
-                  👆 {item.action}
+                  👆 {item._0.label._0}
                 </li>
               );
             case "Edit":
@@ -94,7 +55,7 @@ export default function Timeline({
                   key={index}
                   className="rounded-lg border-3 border-emerald-600 bg-emerald-200 p-1"
                 >
-                  ✏️ {item.edit.kind}@{item.path.join("/")}
+                  ✏️ {item._1.TAG}
                 </li>
               );
             default:

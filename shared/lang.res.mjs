@@ -6,7 +6,21 @@ import * as Belt_Array from "rescript/lib/es6/Belt_Array.js";
 import * as Belt_Option from "rescript/lib/es6/Belt_Option.js";
 import * as LangBcJs from "./lang.bc.js";
 
-function const_encode(v) {
+function string(param_0) {
+  return {
+    TAG: "String",
+    _0: param_0
+  };
+}
+
+function int(param_0) {
+  return {
+    TAG: "Int",
+    _0: param_0
+  };
+}
+
+function const__encode(v) {
   if (v.TAG === "String") {
     return [
       "String",
@@ -20,7 +34,7 @@ function const_encode(v) {
   }
 }
 
-function const_decode(v) {
+function const__decode(v) {
   if (!Array.isArray(v)) {
     return Spice.error(undefined, "Not a variant", v);
   }
@@ -81,20 +95,65 @@ function const_decode(v) {
   return Spice.error(undefined, "Invalid variant constructor", Belt_Array.getExn(v, 0));
 }
 
-let label_encode = Spice.intToJson;
+function label(param_0) {
+  return {
+    TAG: "Label",
+    _0: param_0
+  };
+}
 
-let label_decode = Spice.intFromJson;
+function label_encode(v) {
+  return [
+    "Label",
+    Spice.intToJson(v._0)
+  ];
+}
+
+function label_decode(v) {
+  if (!Array.isArray(v)) {
+    return Spice.error(undefined, "Not a variant", v);
+  }
+  if (v.length === 0) {
+    return Spice.error(undefined, "Expected variant, found empty array", v);
+  }
+  let match = Belt_Array.getExn(v, 0);
+  if (match === "Label") {
+    if (v.length !== 2) {
+      return Spice.error(undefined, "Invalid number of arguments to variant constructor", v);
+    }
+    let v0 = Spice.intFromJson(Belt_Array.getExn(v, 1));
+    if (v0.TAG === "Ok") {
+      return {
+        TAG: "Ok",
+        _0: {
+          TAG: "Label",
+          _0: v0._0
+        }
+      };
+    }
+    let e = v0._0;
+    return {
+      TAG: "Error",
+      _0: {
+        path: "[0]" + e.path,
+        message: e.message,
+        value: e.value
+      }
+    };
+  }
+  return Spice.error(undefined, "Invalid variant constructor", Belt_Array.getExn(v, 0));
+}
 
 function attr_value_encode(v) {
   if (v.TAG === "AttrConst") {
     return [
       "AttrConst",
-      const_encode(v._0)
+      const__encode(v._0)
     ];
   } else {
     return [
       "AttrFunc",
-      Spice.intToJson(v._0)
+      label_encode(v._0)
     ];
   }
 }
@@ -113,7 +172,7 @@ function attr_value_decode(v) {
         if (v.length !== 2) {
           return Spice.error(undefined, "Invalid number of arguments to variant constructor", v);
         }
-        let v0 = const_decode(Belt_Array.getExn(v, 1));
+        let v0 = const__decode(Belt_Array.getExn(v, 1));
         if (v0.TAG === "Ok") {
           return {
             TAG: "Ok",
@@ -136,7 +195,7 @@ function attr_value_decode(v) {
         if (v.length !== 2) {
           return Spice.error(undefined, "Invalid number of arguments to variant constructor", v);
         }
-        let v0$1 = Spice.intFromJson(Belt_Array.getExn(v, 1));
+        let v0$1 = label_decode(Belt_Array.getExn(v, 1));
         if (v0$1.TAG === "Ok") {
           return {
             TAG: "Ok",
@@ -164,7 +223,7 @@ function tree_encode(v) {
   if (v.TAG === "Const") {
     return [
       "Const",
-      const_encode(v._0)
+      const__encode(v._0)
     ];
   } else {
     return [
@@ -188,7 +247,7 @@ function tree_decode(v) {
         if (v.length !== 2) {
           return Spice.error(undefined, "Invalid number of arguments to variant constructor", v);
         }
-        let v0 = const_decode(Belt_Array.getExn(v, 1));
+        let v0 = const__decode(Belt_Array.getExn(v, 1));
         if (v0.TAG === "Ok") {
           return {
             TAG: "Ok",
@@ -325,17 +384,587 @@ function elem_decode(v) {
   return Spice.error("name", e$2.message, e$2.value);
 }
 
+function index(param_0) {
+  return {
+    TAG: "Index",
+    _0: param_0
+  };
+}
+
+function index_encode(v) {
+  return [
+    "Index",
+    Spice.intToJson(v._0)
+  ];
+}
+
+function index_decode(v) {
+  if (!Array.isArray(v)) {
+    return Spice.error(undefined, "Not a variant", v);
+  }
+  if (v.length === 0) {
+    return Spice.error(undefined, "Expected variant, found empty array", v);
+  }
+  let match = Belt_Array.getExn(v, 0);
+  if (match === "Index") {
+    if (v.length !== 2) {
+      return Spice.error(undefined, "Invalid number of arguments to variant constructor", v);
+    }
+    let v0 = Spice.intFromJson(Belt_Array.getExn(v, 1));
+    if (v0.TAG === "Ok") {
+      return {
+        TAG: "Ok",
+        _0: {
+          TAG: "Index",
+          _0: v0._0
+        }
+      };
+    }
+    let e = v0._0;
+    return {
+      TAG: "Error",
+      _0: {
+        path: "[0]" + e.path,
+        message: e.message,
+        value: e.value
+      }
+    };
+  }
+  return Spice.error(undefined, "Invalid variant constructor", Belt_Array.getExn(v, 0));
+}
+
+function path_encode(v) {
+  return Spice.listToJson(index_encode, v);
+}
+
+function path_decode(v) {
+  return Spice.listFromJson(index_decode, v);
+}
+
+function nodeCopy(param_0) {
+  return {
+    TAG: "NodeCopy",
+    _0: param_0
+  };
+}
+
+function nodeDelete(param_0) {
+  return {
+    TAG: "NodeDelete",
+    _0: param_0
+  };
+}
+
+function nodeInsert(param_0, param_1) {
+  return {
+    TAG: "NodeInsert",
+    _0: param_0,
+    _1: param_1
+  };
+}
+
+function constReplace(param_0) {
+  return {
+    TAG: "ConstReplace",
+    _0: param_0
+  };
+}
+
+function attributeReplace(param_0, param_1) {
+  return {
+    TAG: "AttributeReplace",
+    _0: param_0,
+    _1: param_1
+  };
+}
+
+function edit_encode(v) {
+  switch (v.TAG) {
+    case "NodeCopy" :
+      return [
+        "NodeCopy",
+        index_encode(v._0)
+      ];
+    case "NodeDelete" :
+      return [
+        "NodeDelete",
+        index_encode(v._0)
+      ];
+    case "NodeInsert" :
+      return [
+        "NodeInsert",
+        index_encode(v._0),
+        tree_encode(v._1)
+      ];
+    case "ConstReplace" :
+      return [
+        "ConstReplace",
+        const__encode(v._0)
+      ];
+    case "AttributeReplace" :
+      return [
+        "AttributeReplace",
+        Spice.stringToJson(v._0),
+        Spice.nullToJson(const__encode, v._1)
+      ];
+  }
+}
+
+function edit_decode(v) {
+  if (!Array.isArray(v)) {
+    return Spice.error(undefined, "Not a variant", v);
+  }
+  if (v.length === 0) {
+    return Spice.error(undefined, "Expected variant, found empty array", v);
+  }
+  let match = Belt_Array.getExn(v, 0);
+  if (typeof match === "string") {
+    switch (match) {
+      case "AttributeReplace" :
+        if (v.length !== 3) {
+          return Spice.error(undefined, "Invalid number of arguments to variant constructor", v);
+        }
+        let match$1 = Spice.stringFromJson(Belt_Array.getExn(v, 1));
+        let match$2 = Spice.nullFromJson(const__decode, Belt_Array.getExn(v, 2));
+        if (match$1.TAG === "Ok") {
+          if (match$2.TAG === "Ok") {
+            return {
+              TAG: "Ok",
+              _0: {
+                TAG: "AttributeReplace",
+                _0: match$1._0,
+                _1: match$2._0
+              }
+            };
+          }
+          let e = match$2._0;
+          return {
+            TAG: "Error",
+            _0: {
+              path: "[1]" + e.path,
+              message: e.message,
+              value: e.value
+            }
+          };
+        }
+        let e$1 = match$1._0;
+        return {
+          TAG: "Error",
+          _0: {
+            path: "[0]" + e$1.path,
+            message: e$1.message,
+            value: e$1.value
+          }
+        };
+      case "ConstReplace" :
+        if (v.length !== 2) {
+          return Spice.error(undefined, "Invalid number of arguments to variant constructor", v);
+        }
+        let v0 = const__decode(Belt_Array.getExn(v, 1));
+        if (v0.TAG === "Ok") {
+          return {
+            TAG: "Ok",
+            _0: {
+              TAG: "ConstReplace",
+              _0: v0._0
+            }
+          };
+        }
+        let e$2 = v0._0;
+        return {
+          TAG: "Error",
+          _0: {
+            path: "[0]" + e$2.path,
+            message: e$2.message,
+            value: e$2.value
+          }
+        };
+      case "NodeCopy" :
+        if (v.length !== 2) {
+          return Spice.error(undefined, "Invalid number of arguments to variant constructor", v);
+        }
+        let v0$1 = index_decode(Belt_Array.getExn(v, 1));
+        if (v0$1.TAG === "Ok") {
+          return {
+            TAG: "Ok",
+            _0: {
+              TAG: "NodeCopy",
+              _0: v0$1._0
+            }
+          };
+        }
+        let e$3 = v0$1._0;
+        return {
+          TAG: "Error",
+          _0: {
+            path: "[0]" + e$3.path,
+            message: e$3.message,
+            value: e$3.value
+          }
+        };
+      case "NodeDelete" :
+        if (v.length !== 2) {
+          return Spice.error(undefined, "Invalid number of arguments to variant constructor", v);
+        }
+        let v0$2 = index_decode(Belt_Array.getExn(v, 1));
+        if (v0$2.TAG === "Ok") {
+          return {
+            TAG: "Ok",
+            _0: {
+              TAG: "NodeDelete",
+              _0: v0$2._0
+            }
+          };
+        }
+        let e$4 = v0$2._0;
+        return {
+          TAG: "Error",
+          _0: {
+            path: "[0]" + e$4.path,
+            message: e$4.message,
+            value: e$4.value
+          }
+        };
+      case "NodeInsert" :
+        if (v.length !== 3) {
+          return Spice.error(undefined, "Invalid number of arguments to variant constructor", v);
+        }
+        let match$3 = index_decode(Belt_Array.getExn(v, 1));
+        let match$4 = tree_decode(Belt_Array.getExn(v, 2));
+        if (match$3.TAG === "Ok") {
+          if (match$4.TAG === "Ok") {
+            return {
+              TAG: "Ok",
+              _0: {
+                TAG: "NodeInsert",
+                _0: match$3._0,
+                _1: match$4._0
+              }
+            };
+          }
+          let e$5 = match$4._0;
+          return {
+            TAG: "Error",
+            _0: {
+              path: "[1]" + e$5.path,
+              message: e$5.message,
+              value: e$5.value
+            }
+          };
+        }
+        let e$6 = match$3._0;
+        return {
+          TAG: "Error",
+          _0: {
+            path: "[0]" + e$6.path,
+            message: e$6.message,
+            value: e$6.value
+          }
+        };
+    }
+  }
+  return Spice.error(undefined, "Invalid variant constructor", Belt_Array.getExn(v, 0));
+}
+
+function action_type_encode(v) {
+  if (v === "Click") {
+    return ["Click"];
+  } else {
+    return ["Input"];
+  }
+}
+
+function action_type_decode(v) {
+  if (!Array.isArray(v)) {
+    return Spice.error(undefined, "Not a variant", v);
+  }
+  if (v.length === 0) {
+    return Spice.error(undefined, "Expected variant, found empty array", v);
+  }
+  let match = Belt_Array.getExn(v, 0);
+  if (typeof match === "string") {
+    switch (match) {
+      case "Click" :
+        if (v.length !== 1) {
+          return Spice.error(undefined, "Invalid number of arguments to variant constructor", v);
+        } else {
+          return {
+            TAG: "Ok",
+            _0: "Click"
+          };
+        }
+      case "Input" :
+        if (v.length !== 1) {
+          return Spice.error(undefined, "Invalid number of arguments to variant constructor", v);
+        } else {
+          return {
+            TAG: "Ok",
+            _0: "Input"
+          };
+        }
+    }
+  }
+  return Spice.error(undefined, "Invalid variant constructor", Belt_Array.getExn(v, 0));
+}
+
+function action_encode(v) {
+  let extra = v.arg;
+  return Js_dict.fromArray(Spice.filterOptional([
+    [
+      "label",
+      label_encode(v.label)
+    ],
+    [
+      "action_type",
+      action_type_encode(v.action_type)
+    ],
+    [
+      "arg",
+      Spice.optionToJson(Spice.stringToJson, extra)
+    ]
+  ]));
+}
+
+function action_decode(v) {
+  if (typeof v !== "object" || v === null || Array.isArray(v)) {
+    return Spice.error(undefined, "Not an object", v);
+  }
+  let label_result = Belt_Option.getWithDefault(Belt_Option.map(Js_dict.get(v, "label"), label_decode), Spice.error(undefined, "label" + " missing", v));
+  let action_type_result = Belt_Option.getWithDefault(Belt_Option.map(Js_dict.get(v, "action_type"), action_type_decode), Spice.error(undefined, "action_type" + " missing", v));
+  let arg_result = Belt_Option.getWithDefault(Belt_Option.map(Js_dict.get(v, "arg"), extra => Spice.optionFromJson(Spice.stringFromJson, extra)), {
+    TAG: "Ok",
+    _0: undefined
+  });
+  if (label_result.TAG === "Ok") {
+    if (action_type_result.TAG === "Ok") {
+      if (arg_result.TAG === "Ok") {
+        return {
+          TAG: "Ok",
+          _0: {
+            label: label_result._0,
+            action_type: action_type_result._0,
+            arg: arg_result._0
+          }
+        };
+      }
+      let e = arg_result._0;
+      return Spice.error("arg", e.message, e.value);
+    }
+    let e$1 = action_type_result._0;
+    return Spice.error("action_type", e$1.message, e$1.value);
+  }
+  let e$2 = label_result._0;
+  return Spice.error("label", e$2.message, e$2.value);
+}
+
+function demo_step_encode(v) {
+  let extra = v.edits;
+  return Js_dict.fromArray(Spice.filterOptional([
+    [
+      "action",
+      action_encode(v.action)
+    ],
+    [
+      "edits",
+      Spice.arrayToJson(param => ([
+        Spice.listToJson(index_encode, param[0]),
+        edit_encode(param[1])
+      ]), extra)
+    ]
+  ]));
+}
+
+function demo_step_decode(v) {
+  if (typeof v !== "object" || v === null || Array.isArray(v)) {
+    return Spice.error(undefined, "Not an object", v);
+  }
+  let action_result = Belt_Option.getWithDefault(Belt_Option.map(Js_dict.get(v, "action"), action_decode), Spice.error(undefined, "action" + " missing", v));
+  let edits_result = Belt_Option.getWithDefault(Belt_Option.map(Js_dict.get(v, "edits"), extra => Spice.arrayFromJson(json => {
+    if (!Array.isArray(json)) {
+      return Spice.error(undefined, "Not a tuple", json);
+    }
+    if (json.length !== 2) {
+      return Spice.error(undefined, "Incorrect cardinality", json);
+    }
+    let v0 = json[0];
+    let v1 = json[1];
+    let match = Spice.listFromJson(index_decode, v0);
+    let match$1 = edit_decode(v1);
+    if (match.TAG === "Ok") {
+      if (match$1.TAG === "Ok") {
+        return {
+          TAG: "Ok",
+          _0: [
+            match._0,
+            match$1._0
+          ]
+        };
+      }
+      let e = match$1._0;
+      return {
+        TAG: "Error",
+        _0: {
+          path: "[1]" + e.path,
+          message: e.message,
+          value: e.value
+        }
+      };
+    }
+    let e$1 = match._0;
+    return {
+      TAG: "Error",
+      _0: {
+        path: "[0]" + e$1.path,
+        message: e$1.message,
+        value: e$1.value
+      }
+    };
+  }, extra)), Spice.error(undefined, "edits" + " missing", v));
+  if (action_result.TAG === "Ok") {
+    if (edits_result.TAG === "Ok") {
+      return {
+        TAG: "Ok",
+        _0: {
+          action: action_result._0,
+          edits: edits_result._0
+        }
+      };
+    }
+    let e = edits_result._0;
+    return Spice.error("edits", e.message, e.value);
+  }
+  let e$1 = action_result._0;
+  return Spice.error("action", e$1.message, e$1.value);
+}
+
+function demo_encode(v) {
+  return Js_dict.fromArray(Spice.filterOptional([
+    [
+      "init",
+      tree_encode(v.init)
+    ],
+    [
+      "steps",
+      Spice.arrayToJson(demo_step_encode, v.steps)
+    ]
+  ]));
+}
+
+function demo_decode(v) {
+  if (typeof v !== "object" || v === null || Array.isArray(v)) {
+    return Spice.error(undefined, "Not an object", v);
+  }
+  let init_result = Belt_Option.getWithDefault(Belt_Option.map(Js_dict.get(v, "init"), tree_decode), Spice.error(undefined, "init" + " missing", v));
+  let steps_result = Belt_Option.getWithDefault(Belt_Option.map(Js_dict.get(v, "steps"), extra => Spice.arrayFromJson(demo_step_decode, extra)), Spice.error(undefined, "steps" + " missing", v));
+  if (init_result.TAG === "Ok") {
+    if (steps_result.TAG === "Ok") {
+      return {
+        TAG: "Ok",
+        _0: {
+          init: init_result._0,
+          steps: steps_result._0
+        }
+      };
+    }
+    let e = steps_result._0;
+    return Spice.error("steps", e.message, e.value);
+  }
+  let e$1 = init_result._0;
+  return Spice.error("init", e$1.message, e$1.value);
+}
+
+function action(param_0) {
+  return {
+    TAG: "Action",
+    _0: param_0
+  };
+}
+
+function edit(param_0, param_1) {
+  return {
+    TAG: "Edit",
+    _0: param_0,
+    _1: param_1
+  };
+}
+
+function collectEdits(timeline) {
+  let match = timeline[0];
+  if (match === undefined) {
+    return [];
+  }
+  if (match.TAG === "Action") {
+    return [];
+  }
+  timeline.shift();
+  let rest = collectEdits(timeline);
+  return Belt_Array.concatMany([
+    [[
+        match._0,
+        match._1
+      ]],
+    rest
+  ]);
+}
+
+function timelineToDemoSteps(timeline) {
+  let match = timeline[0];
+  if (match === undefined) {
+    return [];
+  }
+  if (match.TAG === "Action") {
+    timeline.shift();
+    let edits = collectEdits(timeline);
+    let steps = timelineToDemoSteps(timeline);
+    return Belt_Array.concatMany([
+      [{
+          action: match._0,
+          edits: edits
+        }],
+      steps
+    ]);
+  }
+  console.error("Timeline cannot start with an edit action", timeline);
+  throw {
+    RE_EXN_ID: "Failure",
+    _1: "Timeline cannot start with an edit action",
+    Error: new Error()
+  };
+}
+
 function _parse(prim) {
   return LangBcJs.parse(prim);
 }
 
 function parse(prog) {
-  return tree_decode(LangBcJs.parse(prog));
+  let tree = tree_decode(LangBcJs.parse(prog));
+  if (tree.TAG === "Ok") {
+    return tree._0;
+  }
+  let err = tree._0;
+  throw {
+    RE_EXN_ID: "Failure",
+    _1: err.path + ": " + err.message,
+    Error: new Error()
+  };
+}
+
+function _synthesize(prim0, prim1) {
+  return LangBcJs.synthesize(prim0, prim1);
+}
+
+function synthesize(prog, steps) {
+  let steps$1 = JSON.stringify(steps.map(demo_step_encode));
+  console.debug("Stringified steps:", steps$1);
+  return LangBcJs.synthesize(prog, steps$1);
 }
 
 export {
-  const_encode,
-  const_decode,
+  string,
+  int,
+  const__encode,
+  const__decode,
+  label,
   label_encode,
   label_decode,
   attr_value_encode,
@@ -344,7 +973,33 @@ export {
   tree_decode,
   elem_encode,
   elem_decode,
+  index,
+  index_encode,
+  index_decode,
+  path_encode,
+  path_decode,
+  nodeCopy,
+  nodeDelete,
+  nodeInsert,
+  constReplace,
+  attributeReplace,
+  edit_encode,
+  edit_decode,
+  action_type_encode,
+  action_type_decode,
+  action_encode,
+  action_decode,
+  demo_step_encode,
+  demo_step_decode,
+  demo_encode,
+  demo_decode,
+  action,
+  edit,
+  collectEdits,
+  timelineToDemoSteps,
   _parse,
   parse,
+  _synthesize,
+  synthesize,
 }
 /* ./lang.bc.js Not a pure module */
