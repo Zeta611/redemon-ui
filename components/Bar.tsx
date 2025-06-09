@@ -16,7 +16,7 @@ export default function Bar() {
     <div className="dots-dense dots">
       <div className="to-accent flex items-center gap-7 bg-linear-to-l to-85% px-3 py-2">
         <Link href="/" className="font-heading text-2xl">
-          ReDemon UI
+          🧙‍♀️ ReDemon UI
         </Link>
         <Menubar>
           <MenubarMenu>
