@@ -258,6 +258,11 @@ function editDecorations(
 
         case "JSXText": {
           if (currentIndex === null) {
+            console.error(
+              "JSXText without JSXOpenTag",
+              currentPath,
+              view.state.sliceDoc(node.from, node.to),
+            );
             throw new Error("JSXText without JSXOpenTag");
           }
 
@@ -289,7 +294,12 @@ function editDecorations(
 
         case "JSXEscape": {
           if (currentIndex === null) {
-            throw new Error("JSXText without JSXOpenTag");
+            console.error(
+              "JSXEscape without JSXOpenTag",
+              currentPath,
+              view.state.sliceDoc(node.from, node.to),
+            );
+            throw new Error("JSXEscape without JSXOpenTag");
           }
 
           const from = node.from;
@@ -339,11 +349,11 @@ function editDecorations(
 
         case "JSXElement": {
           const children = node.node.getChildren("JSXElement");
-          if (currentIndex === null) {
-            throw new Error("JSXElement without JSXOpenTag");
-          }
+          const path =
+            currentIndex === null
+              ? [...currentPath]
+              : [...currentPath, currentIndex];
 
-          const path = [...currentPath, currentIndex];
           children.forEach((child, idx) => {
             const deco = Decoration.widget({
               widget: new NodeEditWidget(
