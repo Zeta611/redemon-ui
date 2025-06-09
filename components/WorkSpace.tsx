@@ -32,6 +32,11 @@ const sample = `<div className="flex flex-col items-center">
 </div>
 `;
 
+type TimelineInfo = {
+  timeline: timeline;
+  sketch: string;
+};
+
 export default function WorkSpace() {
   const [sketch, setSketch] = useState(sample);
   const [locked, setLocked] = useState(false);
@@ -53,49 +58,64 @@ export default function WorkSpace() {
 
   const [synthesized, setSynthesized] = useState("");
 
-  const [timelines, setTimelines] = useState<timeline[]>([[]]);
+  // [timeline, string] is a pair of a timeline and the final state of the sketch for that timeline.
+  const [timelines, setTimelines] = useState<TimelineInfo[]>([
+    { timeline: [], sketch },
+  ]);
   const [workingTimeline, setWorkingTimeline] = useState<number | null>(0);
 
+  function setWorkingTimelineAndResetSketch(idx: number | null) {
+    if (lockedSketch.current === null) {
+      return;
+    }
+    setWorkingTimeline(idx);
+    setSketch(idx === null ? lockedSketch.current : timelines[idx].sketch);
+  }
+
   function addTimeline() {
-    setTimelines((timelines) => [...timelines, []]);
+    if (lockedSketch.current === null) {
+      return;
+    }
+    const sketch = lockedSketch.current;
+    setSketch(lockedSketch.current);
+
+    setTimelines((timelines) => [...timelines, { timeline: [], sketch }]);
     setWorkingTimeline(timelines.length);
   }
 
   function removeTimeline(idx: number) {
+    if (lockedSketch.current === null) {
+      return;
+    }
+    const sketch = lockedSketch.current;
+    setSketch(sketch);
+
     setTimelines((timelines) => timelines.filter((_, i) => i !== idx));
-    setTimelines((timelines) => (timelines.length === 0 ? [[]] : timelines));
+    setTimelines((timelines) =>
+      timelines.length === 0 ? [{ timeline: [], sketch }] : timelines,
+    );
     if (workingTimeline === idx) {
       setWorkingTimeline(null);
     }
   }
 
   function resetTimelines() {
-    setTimelines([[]]);
+    if (lockedSketch.current === null) {
+      return;
+    }
+    const sketch = lockedSketch.current;
+    setSketch(sketch);
+
+    setTimelines([{ timeline: [], sketch }]);
     setWorkingTimeline(null);
   }
 
-  // function addSketchToTimeline(index: number, sketch: string) {
-  //   setTimelines(
-  //     timelines.map((timeline, i) => {
-  //       if (i === index) {
-  //         return [...timeline, { kind: "Sketch", sketch }];
-  //       }
-  //       return timeline;
-  //     }),
-  //   );
-  // }
-  //
-  // function addSketch(sketch: string) {
-  //   if (workingTimeline !== null) {
-  //     addSketchToTimeline(workingTimeline, sketch);
-  //   }
-  // }
-
   function addActionToTimeline(idx: number, a: action) {
     setTimelines((timelines) =>
-      timelines.map((timeline, i) =>
-        i === idx ? [...timeline, action(a)] : timeline,
-      ),
+      timelines.map(({ timeline: t, sketch: s }, i) => ({
+        timeline: i === idx ? [...t, action(a)] : t,
+        sketch: s,
+      })),
     );
   }
 
@@ -109,19 +129,23 @@ export default function WorkSpace() {
     }
   }
 
-  function addEditToTimeline(idx: number, path: number[], e: edit) {
+  function addEditToTimeline(
+    idx: number,
+    getSketch: () => string,
+    path: number[],
+    e: edit,
+  ) {
     setTimelines((timelines) =>
-      timelines.map((timeline, i) =>
-        i === idx
-          ? [...timeline, edit(fromArray(path.map(index)), e)]
-          : timeline,
-      ),
+      timelines.map(({ timeline: t, sketch: s }, i) => ({
+        timeline: i === idx ? [...t, edit(fromArray(path.map(index)), e)] : t,
+        sketch: i === idx ? getSketch() : s,
+      })),
     );
   }
 
-  function addEdit(path: number[], edit: edit) {
+  function addEdit(getSketch: () => string, path: number[], edit: edit) {
     if (workingTimeline !== null) {
-      addEditToTimeline(workingTimeline, path, edit);
+      addEditToTimeline(workingTimeline, getSketch, path, edit);
     }
   }
 
@@ -138,7 +162,7 @@ export default function WorkSpace() {
         sketch,
         timelines,
       );
-      const demoSteps = timelineToDemoSteps([...timelines[0]]);
+      const demoSteps = timelineToDemoSteps([...timelines[0].timeline]);
       console.debug("Demo steps:", demoSteps);
       const result = synthesize(sketch, demoSteps);
       if (result.error) {
@@ -182,12 +206,12 @@ export default function WorkSpace() {
       >
         <TimelinePanes
           locked={locked}
-          timelines={timelines}
+          timelines={timelines.map(({ timeline }) => timeline)}
           addTimeline={addTimeline}
           removeTimeline={removeTimeline}
           resetTimelines={resetTimelines}
           workingTimeline={workingTimeline}
-          setWorkingTimeline={setWorkingTimeline}
+          setWorkingTimeline={setWorkingTimelineAndResetSketch}
           synthesize={synthesizeWithSketchAndTimelines}
         />
       </ResizablePanel>

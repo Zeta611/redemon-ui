@@ -27,7 +27,7 @@ type SketchPaneProps = {
   locked: boolean;
   setLocked: (locked: boolean) => void;
   addAction: (hole: number) => void;
-  addEdit: (path: number[], edit: edit) => void;
+  addEdit: (getSketch: () => string, path: number[], edit: edit) => void;
 };
 
 export default function SketchPane({
@@ -51,6 +51,7 @@ export default function SketchPane({
     })();
   }, [sketch]);
 
+  // Hack to get the current addEdit function in the plugin
   const addEditRef = useRef(addEdit);
   addEditRef.current = addEdit;
   const extensions = useMemo(() => {
