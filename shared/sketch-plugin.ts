@@ -229,7 +229,7 @@ function editDecorations(
 ) {
   const widgets: Range<Decoration>[] = [];
   const currentPath: number[] = [];
-  let currentIndex = 0;
+  let currentIndex: number | null = null;
   let cnt = 0;
 
   syntaxTree(view.state).iterate({
@@ -243,18 +243,24 @@ function editDecorations(
       );
       switch (node.name) {
         case "JSXOpenTag":
-          currentPath.push(currentIndex);
+          if (currentIndex !== null) {
+            currentPath.push(currentIndex);
+          }
           currentIndex = 0;
           break;
 
         case "JSXCloseTag":
-          if (currentPath.length === 0) {
-            throw new Error("Invalid JSX structure");
-          }
+          // if (currentPath.length === 0) {
+          //   throw new Error("Invalid JSX structure");
+          // }
           currentIndex = currentPath.pop()! + 1;
           break;
 
         case "JSXText": {
+          if (currentIndex === null) {
+            throw new Error("JSXText without JSXOpenTag");
+          }
+
           let text = view.state.sliceDoc(node.from, node.to);
           if (text.trim() === "") {
             break;
@@ -264,7 +270,7 @@ function editDecorations(
           const from = node.from + leadingSpaceLen;
           const to = node.to - trailingSpaceLen;
           text = text.slice(leadingSpaceLen, text.length - trailingSpaceLen);
-          const path = [...currentPath];
+          const path = [...currentPath, currentIndex++];
           const deco = Decoration.replace({
             widget: new TextReplaceWidget(++cnt, text, (value) => {
               replaceText(view, from, to, value);
@@ -282,10 +288,14 @@ function editDecorations(
         }
 
         case "JSXEscape": {
+          if (currentIndex === null) {
+            throw new Error("JSXText without JSXOpenTag");
+          }
+
           const from = node.from;
           const to = node.to;
           const text = view.state.sliceDoc(from, to);
-          const path = [...currentPath];
+          const path = [...currentPath, currentIndex++];
           const deco = Decoration.replace({
             widget: new TextReplaceWidget(++cnt, text, (value) => {
               replaceText(view, from, to, value);
@@ -329,6 +339,10 @@ function editDecorations(
 
         case "JSXElement": {
           const children = node.node.getChildren("JSXElement");
+          if (currentIndex === null) {
+            throw new Error("JSXElement without JSXOpenTag");
+          }
+
           const path = [...currentPath, currentIndex];
           children.forEach((child, idx) => {
             const deco = Decoration.widget({
