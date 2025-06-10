@@ -358,7 +358,12 @@ function editDecorations(
                 addEditRef.current(
                   getSketch,
                   path,
-                  attributeReplace(identifier, string(value)),
+                  attributeReplace(
+                    identifier,
+                    value.startsWith("{") && value.endsWith("}")
+                      ? int(Number(value.slice(1, -1).trim()))
+                      : string(value.slice(1, -1).trim()),
+                  ),
                 );
               },
             ),
