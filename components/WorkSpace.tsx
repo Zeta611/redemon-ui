@@ -41,6 +41,14 @@ export default function WorkSpace() {
   const [sketch, setSketch] = useState(sample);
   const [locked, setLocked] = useState(false);
 
+  function setLockedAndResetSketchAndTimelines(locked: boolean) {
+    if (!locked) {
+      // If unlocking, reset sketch to the locked sketch and reset timelines
+      resetTimelines();
+    }
+    setLocked(locked);
+  }
+
   const lockHot = useRef(false);
   useEffect(() => {
     lockHot.current = locked;
@@ -186,7 +194,7 @@ export default function WorkSpace() {
               sketch={sketch}
               setSketch={setSketch}
               locked={locked}
-              setLocked={setLocked}
+              setLocked={setLockedAndResetSketchAndTimelines}
               addAction={addAction}
               addEdit={addEdit}
             />
