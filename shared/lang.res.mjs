@@ -953,10 +953,10 @@ function _synthesize(prim0, prim1) {
   return LangBcJs.synthesize(prim0, prim1);
 }
 
-function synthesize(prog, steps) {
-  let steps$1 = JSON.stringify(steps.map(demo_step_encode));
-  console.debug("Stringified steps:", steps$1);
-  return LangBcJs.synthesize(prog, steps$1);
+function synthesize(prog, steps_array) {
+  let steps = JSON.stringify(steps_array.map(steps => steps.map(demo_step_encode)));
+  console.debug("Stringified steps:", steps);
+  return LangBcJs.synthesize(prog, steps);
 }
 
 export {

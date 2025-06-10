@@ -170,9 +170,11 @@ export default function WorkSpace() {
         sketch,
         timelines,
       );
-      const demoSteps = timelineToDemoSteps([...timelines[0].timeline]);
-      console.debug("Demo steps:", demoSteps);
-      const result = synthesize(sketch, demoSteps);
+      const demoStepsArr = timelines.map(({ timeline }) =>
+        timelineToDemoSteps([...timeline]),
+      );
+      console.debug("Demo steps array:", demoStepsArr);
+      const result = synthesize(sketch, demoStepsArr);
       if (result.error) {
         console.error("Synthesis error:", result.error);
         return;
