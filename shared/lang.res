@@ -114,6 +114,9 @@ type synthesisResult = {
 @module("./lang.bc.js")
 external _synthesize: (string, string) => synthesisResult = "synthesize"
 
+@module("./lang.bc.js")
+external _prompts: (string, string) => 'prompts = "prompts"
+
 @genType
 let synthesize = (prog, steps_array) => {
   // Convert the array of array of steps to a string representation
@@ -123,5 +126,7 @@ let synthesize = (prog, steps_array) => {
     ->JSON.Encode.array
     ->JSON.stringify
   Console.debug2("Stringified steps:", steps)
+  // FIXME: Experimenting
+  Console.debug2("Prompts:", _prompts(prog, steps))
   _synthesize(prog, steps)
 }

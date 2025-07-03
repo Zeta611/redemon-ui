@@ -158,6 +158,21 @@ export default function WorkSpace() {
   }
 
   function synthesizeWithSketchAndTimelines() {
+    // FIXME: Test code
+    (async () => {
+      const response = await fetch("/api/llm", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          question: "What is the color of the sky?",
+        }),
+      });
+      const { answer } = await response.json();
+      console.log("LLM response:", answer);
+    })();
+
     if (lockedSketch.current === null) {
       console.error("Sketch is not locked, cannot synthesize. This is a bug.");
       return;
