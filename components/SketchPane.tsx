@@ -14,19 +14,19 @@ import { editPlugin } from "@/shared/sketch-plugin";
 import { Separator } from "@/ui/separator";
 import { Button } from "@/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/ui/tooltip";
-import { format, replaceHoles } from "@/shared/sketch";
+import { format, preprocessSketch, updateValueForLabel } from "@/shared/sketch";
 import { Switch } from "@/ui/switch";
 import { Label } from "@/ui/label";
 import { cn } from "@/shared/utils";
 import injectStyles from "@/shared/injectStyles";
-import { edit } from "@/shared/lang.gen";
+import { action_type, edit } from "@/shared/lang.gen";
 
 type SketchPaneProps = {
   sketch: string;
   setSketch: (sketch: string) => void;
   locked: boolean;
   setLocked: (locked: boolean) => void;
-  addAction: (hole: number) => void;
+  addAction: (hole: number, action_type: action_type) => void;
   addEdit: (getSketch: () => string, path: number[], edit: edit) => void;
 };
 
@@ -44,10 +44,7 @@ export default function SketchPane({
     (async () => {
       const root = shadowRoot.current?.shadowRoot;
       if (!root) return;
-      await injectStyles(
-        replaceHoles(sketch, "() => { addAction($1); }"),
-        root,
-      );
+      await injectStyles(preprocessSketch(sketch), root);
     })();
   }, [sketch]);
 
@@ -64,10 +61,18 @@ export default function SketchPane({
     ].concat(locked ? [editPlugin(addEditRef)] : []);
   }, [locked, addEditRef]);
 
+  const currentInputRef = useRef<[number, string]>([0, ""]);
+  const submitInput = () => {
+    const [label, value] = currentInputRef.current;
+    addAction(label, "Input");
+    currentInputRef.current = [0, ""];
+    setSketch(updateValueForLabel(sketch, label, value));
+  };
+
   return (
     <LiveProvider
-      code={replaceHoles(sketch, "() => { addAction($1); }")}
-      scope={{ addAction }}
+      code={preprocessSketch(sketch)}
+      scope={{ addAction, setSketch, currentInputRef }}
     >
       <ResizablePanelGroup direction="vertical">
         <ResizablePanel defaultSize={60} minSize={30}>
@@ -132,15 +137,26 @@ export default function SketchPane({
         </ResizablePanel>
         <ResizableHandle withHandle={false} />
         <ResizablePanel className="dots-wide dots flex items-center justify-center">
-          <root.div
-            ref={shadowRoot}
-            className={cn(
-              "bg-background border-ring rounded-lg border-3 p-3",
-              locked || "pointer-events-none",
+          <div className="flex flex-col items-end gap-1">
+            <root.div
+              ref={shadowRoot}
+              className={cn(
+                "bg-background border-ring rounded-lg border-3 p-3",
+                locked || "pointer-events-none",
+              )}
+            >
+              <LivePreview />
+            </root.div>
+            {locked && (
+              <Button
+                size="icon"
+                className="size-6 rounded bg-orange-200 text-orange-900 shadow-sm/75 inset-shadow-xs/90 inset-shadow-white hover:bg-orange-300"
+                onClick={submitInput}
+              >
+                💬
+              </Button>
             )}
-          >
-            <LivePreview />
-          </root.div>
+          </div>
         </ResizablePanel>
       </ResizablePanelGroup>
     </LiveProvider>

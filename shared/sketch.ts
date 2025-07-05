@@ -2,8 +2,49 @@ import prettier from "prettier/standalone";
 import prettierPluginFlow from "prettier/plugins/flow";
 import prettierPluginEstree from "prettier/plugins/estree";
 
-export function replaceHoles(sketch: string, replacement: string) {
-  return sketch.replaceAll(/\$(\d*)/g, replacement);
+// TODO: Use the lezer parser to preprocess, instead of this brittle approach
+export function preprocessSketch(sketch: string) {
+  return sketch
+    .replaceAll(
+      /(?<=onClick\s*=\s*{\s*)\$(\d*)(?=\s*})/g,
+      "() => { addAction($1, 'Click'); }",
+    )
+    .replaceAll(
+      /(?<=onChange\s*=\s*{\s*)\$(\d*)(?=\s*})/g,
+      "(e) => { currentInputRef.current = [$1, e.target.value]; }",
+    )
+    .replaceAll(/\bvalue=/g, "defaultValue=");
+}
+
+// TODO: Use the lezer parser to preprocess, instead of this brittle approach
+export function updateValueForLabel(
+  sketch: string,
+  label: number,
+  value: string,
+) {
+  const elementMatch = sketch.match(
+    new RegExp(
+      String.raw`<\s*input\b.*\bonChange\s*=\s*{\s*\$${label}\s*}\s*.*/>`,
+      "s",
+    ),
+  );
+  if (!elementMatch) {
+    console.error("No value found for label:", label);
+    return sketch;
+  }
+
+  const element = elementMatch[0];
+  const index = elementMatch.index!;
+  const updatedElement = element.replace(
+    // NOTE: For future me, ?<= is a positive lookbehind, ?: is a non-capturing group, and ?= is a positive lookahead
+    /(?<=\bvalue\s*=\s*")(?:[^"\\]|\\.)*(?=")/,
+    value,
+  );
+  return (
+    sketch.slice(0, index) +
+    updatedElement +
+    sketch.slice(index + element.length)
+  );
 }
 
 export function stubHoles(sketch: string) {

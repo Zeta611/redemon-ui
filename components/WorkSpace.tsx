@@ -10,6 +10,7 @@ import SketchPane from "@/components/SketchPane";
 import SynthPane from "@/components/SynthPane";
 import {
   action,
+  action_type,
   edit,
   index,
   label,
@@ -20,15 +21,14 @@ import {
 import { fromArray } from "@/shared/utils";
 
 const sample = `<div className="flex flex-col items-center">
-  <div className="font-semibold text-lg">
-  {0}
-  </div>
+  <div className="font-semibold text-lg">{0}</div>
   <button
     className="border-none bg-stone-500 text-white px-2 py-1 rounded"
     onClick={$0}
   >
     Increment
   </button>
+  <input value="" onChange={$1} />
 </div>
 `;
 
@@ -134,12 +134,12 @@ export default function WorkSpace() {
     );
   }
 
-  function addAction(hole: number) {
+  function addAction(hole: number, action_type: action_type) {
     if (workingTimeline !== null) {
       addActionToTimeline(workingTimeline, {
         label: label(hole),
         // TODO: Add support for other action types (just Input for now)
-        action_type: "Click",
+        action_type,
       });
     }
   }

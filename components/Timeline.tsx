@@ -41,14 +41,26 @@ export default function Timeline({
             //     </li>
             //   );
             case "Action":
-              return (
-                <li
-                  key={index}
-                  className="rounded-lg bg-orange-500 p-1.5 shadow-sm/50 inset-shadow-xs/80 inset-shadow-white"
-                >
-                  👆 {item._0.label._0}
-                </li>
-              );
+              switch (item._0.action_type) {
+                case "Click":
+                  return (
+                    <li
+                      key={index}
+                      className="rounded-lg bg-orange-500 p-1.5 shadow-sm/50 inset-shadow-xs/80 inset-shadow-white"
+                    >
+                      👆 {item._0.label._0}
+                    </li>
+                  );
+                case "Input":
+                  return (
+                    <li
+                      key={index}
+                      className="text-secondary-foreground rounded-lg bg-indigo-400 p-1.5 shadow-sm/50 inset-shadow-xs/80 inset-shadow-white"
+                    >
+                      💬 {item._0.label._0}
+                    </li>
+                  );
+              }
             case "Edit":
               return (
                 <li
