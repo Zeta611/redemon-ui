@@ -134,12 +134,13 @@ export default function WorkSpace() {
     );
   }
 
-  function addAction(hole: number, action_type: action_type) {
+  function addAction(hole: number, action_type: action_type, arg?: string) {
     if (workingTimeline !== null) {
       addActionToTimeline(workingTimeline, {
         label: label(hole),
         // TODO: Add support for other action types (just Input for now)
         action_type,
+        arg,
       });
     }
   }

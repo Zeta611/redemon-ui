@@ -26,7 +26,7 @@ type SketchPaneProps = {
   setSketch: (sketch: string) => void;
   locked: boolean;
   setLocked: (locked: boolean) => void;
-  addAction: (hole: number, action_type: action_type) => void;
+  addAction: (hole: number, action_type: action_type, arg?: string) => void;
   addEdit: (getSketch: () => string, path: number[], edit: edit) => void;
 };
 
@@ -64,7 +64,7 @@ export default function SketchPane({
   const currentInputRef = useRef<[number, string]>([0, ""]);
   const submitInput = () => {
     const [label, value] = currentInputRef.current;
-    addAction(label, "Input");
+    addAction(label, "Input", value);
     currentInputRef.current = [0, ""];
     setSketch(updateValueForLabel(sketch, label, value));
   };
