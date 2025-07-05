@@ -44,8 +44,9 @@ export default function WorkSpace() {
   function setLockedAndResetSketchAndTimelines(locked: boolean) {
     if (!locked) {
       // If unlocking, reset sketch to the locked sketch and reset timelines
-      resetTimelines();
+      // resetTimelines();
     }
+    resetTimelines();
     setLocked(locked);
   }
 
@@ -107,15 +108,21 @@ export default function WorkSpace() {
     }
   }
 
+  // Reset timelines and recover sketch from lockedSketch
   function resetTimelines() {
     if (lockedSketch.current === null) {
+      // Locking
+      setTimelines([{ timeline: [], sketch }]);
+      setWorkingTimeline(0);
       return;
-    }
-    const sketch = lockedSketch.current;
-    setSketch(sketch);
+    } else {
+      // Unlocking
+      const sketch = lockedSketch.current;
+      setSketch(sketch);
 
-    setTimelines([{ timeline: [], sketch }]);
-    setWorkingTimeline(null);
+      setTimelines([{ timeline: [], sketch }]);
+      setWorkingTimeline(0);
+    }
   }
 
   function addActionToTimeline(idx: number, a: action) {
