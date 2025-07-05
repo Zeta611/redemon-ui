@@ -53,6 +53,7 @@ class TextReplaceWidget extends WidgetType {
     submitButton.onclick = () => {
       const value = textarea.textContent?.trim();
       if (value) {
+        console.debug("Submitting value:", value);
         this.onSubmit(value);
       }
     };
@@ -223,6 +224,10 @@ function removeNode(view: EditorView, from: number, to: number) {
   return true;
 }
 
+// This counter is used to *always* give a unique ID to each widget each update
+// If this turns out to be a problem, we can keep track of the ranges of each widget and bookkeep them with each edit
+let cnt = 0;
+
 function editDecorations(
   view: EditorView,
   addEditRef: RefObject<
@@ -232,7 +237,6 @@ function editDecorations(
   const widgets: Range<Decoration>[] = [];
   const currentPath: number[] = [];
   let currentIndex: number | null = null;
-  let cnt = 0;
 
   const getSketch = () => view.state.doc.toString();
 
@@ -436,6 +440,7 @@ function editPlugin(
           update.viewportChanged ||
           syntaxTree(update.startState) != syntaxTree(update.state)
         ) {
+          console.debug("Updating edit decorations");
           this.decorations = editDecorations(update.view, addEditRef);
         }
       }
