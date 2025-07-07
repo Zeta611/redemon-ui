@@ -78,9 +78,9 @@ export default function SketchPane({
         <ResizablePanel defaultSize={60} minSize={30}>
           <div className="flex h-full flex-col">
             <div className="flex h-8 items-center justify-between px-2">
-              <div className="flex gap-2 font-bold">
+              <div className="flex gap-2 font-semibold">
                 <span>🎨</span>
-                <span className="font-serif">Sketch</span>
+                <span className="font-rounded">Sketch</span>
               </div>
               <div className="flex h-4 items-center gap-3">
                 <Tooltip>

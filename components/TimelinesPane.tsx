@@ -37,9 +37,9 @@ export default function TimelinesPane({
         )}
       >
         <div className="flex h-8 items-center justify-between px-2">
-          <div className="flex gap-2 font-bold">
+          <div className="flex gap-2 font-semibold">
             <span>🎞️</span>
-            <span className="font-serif">Timelines</span>
+            <span className="font-rounded">Timelines</span>
           </div>
           <div className="flex h-4 items-center gap-3">
             <Tooltip>
@@ -91,7 +91,7 @@ export default function TimelinesPane({
               onClick={addTimeline}
             >
               <Plus />
-              <span className="font-bold">Add Timeline</span>
+              <span className="font-rounded font-bold">Add Timeline</span>
             </Button>
             <Button
               variant="secondary"
@@ -104,7 +104,7 @@ export default function TimelinesPane({
               onClick={synthesize}
             >
               <WandSparkles />
-              <span className="font-bold">Synthesize!</span>
+              <span className="font-rounded font-bold">Synthesize!</span>
             </Button>
           </div>
         </div>

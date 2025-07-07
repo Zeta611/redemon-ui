@@ -1,18 +1,13 @@
 import type { Metadata } from "next";
-import { Montserrat, Playfair, Playfair_Display_SC } from "next/font/google";
+import { Montserrat, Tsukimi_Rounded } from "next/font/google";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
 import { Separator } from "@/ui/separator";
 import Bar from "@/components/Bar";
 
-const playfair = Playfair({
-  variable: "--font-serif",
-  subsets: ["latin"],
-});
-
-const playfairDisplaySC = Playfair_Display_SC({
-  variable: "--font-heading",
-  weight: ["700"],
+const tsukimiRounded = Tsukimi_Rounded({
+  weight: ["500", "600", "700"],
+  variable: "--font-rounded",
   subsets: ["latin"],
 });
 
@@ -35,7 +30,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${playfair.variable} ${playfairDisplaySC.variable} ${montserrat.variable} flex h-screen w-screen flex-col font-sans antialiased`}
+        className={`${tsukimiRounded.variable} ${montserrat.variable} flex h-screen w-screen flex-col font-sans antialiased`}
       >
         <Bar />
         <Separator />
