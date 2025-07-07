@@ -125,13 +125,22 @@ function replaceText(
 }
 
 class NodeEditWidget extends WidgetType {
+  readonly onCopy?: () => void;
+  readonly onRemove?: () => void;
+  readonly onInsert?: (value: string) => void;
+
   constructor(
     readonly id: number,
-    readonly onCopy: () => void,
-    readonly onRemove: () => void,
-    readonly onInsert: (value: string) => void,
+    callbacks: {
+      onCopy?: () => void;
+      onRemove?: () => void;
+      onInsert?: (value: string) => void;
+    },
   ) {
     super();
+    this.onCopy = callbacks.onCopy;
+    this.onRemove = callbacks.onRemove;
+    this.onInsert = callbacks.onInsert;
   }
 
   eq(other: NodeEditWidget) {
@@ -146,43 +155,54 @@ class NodeEditWidget extends WidgetType {
     const buttons = wrap.appendChild(document.createElement("div"));
     buttons.className = tw`flex flex-row items-center gap-1`;
 
-    const removeButton = buttons.appendChild(document.createElement("button"));
-    removeButton.className = removeButtonClass;
-    removeButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="10.5" height="10.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-square-minus-icon lucide-square-minus"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M8 12h8"/></svg>`;
-    removeButton.onclick = this.onRemove;
+    if (this.onRemove) {
+      const removeButton = buttons.appendChild(
+        document.createElement("button"),
+      );
+      removeButton.className = removeButtonClass;
+      removeButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="10.5" height="10.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-square-minus-icon lucide-square-minus"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M8 12h8"/></svg>`;
+      removeButton.onclick = this.onRemove;
+    }
 
-    const copyButton = buttons.appendChild(document.createElement("button"));
-    copyButton.className = copyButtonClass;
-    copyButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="10.5" height="10.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-copy-plus-icon lucide-copy-plus"><line x1="15" x2="15" y1="12" y2="18"/><line x1="12" x2="18" y1="15" y2="15"/><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>`;
-    copyButton.onclick = this.onCopy;
+    if (this.onCopy) {
+      const copyButton = buttons.appendChild(document.createElement("button"));
+      copyButton.className = copyButtonClass;
+      copyButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="10.5" height="10.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-copy-plus-icon lucide-copy-plus"><line x1="15" x2="15" y1="12" y2="18"/><line x1="12" x2="18" y1="15" y2="15"/><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>`;
+      copyButton.onclick = this.onCopy;
+    }
 
-    const insertButton = buttons.appendChild(document.createElement("button"));
-    insertButton.className = insertButtonClass;
-    insertButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="10.5" height="10.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-square-code-icon lucide-square-code"><path d="m10 9-3 3 3 3"/><path d="m14 15 3-3-3-3"/><rect x="3" y="3" width="18" height="18" rx="2"/></svg>`;
-    insertButton.onclick = () => {
-      insertLine.classList.toggle("hidden");
-    };
+    if (this.onInsert) {
+      const insertButton = buttons.appendChild(
+        document.createElement("button"),
+      );
+      insertButton.className = insertButtonClass;
+      insertButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="10.5" height="10.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-square-code-icon lucide-square-code"><path d="m10 9-3 3 3 3"/><path d="m14 15 3-3-3-3"/><rect x="3" y="3" width="18" height="18" rx="2"/></svg>`;
+      insertButton.onclick = () => {
+        insertLine.classList.toggle("hidden");
+      };
 
-    const insertLine = wrap.appendChild(document.createElement("div"));
-    insertLine.className = tw`flex hidden items-end gap-1`;
-    const insertArea = insertLine.appendChild(
-      document.createElement("textarea"),
-    );
-    insertArea.className = insertAreaClass;
-    insertArea.placeholder = "Insert new element here";
-    const submitInsert = insertLine.appendChild(
-      document.createElement("button"),
-    );
-    submitInsert.className = submitButtonClass;
-    submitInsert.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="10.5" height="10.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check-icon lucide-check"><path d="M20 6 9 17l-5-5"/></svg>`;
-    submitInsert.onclick = () => {
-      const value = insertArea.value.trim();
-      if (value) {
-        this.onInsert(value);
-        insertArea.value = "";
-        insertLine.classList.add("hidden");
-      }
-    };
+      const insertLine = wrap.appendChild(document.createElement("div"));
+      insertLine.className = tw`flex hidden items-end gap-1`;
+      const insertArea = insertLine.appendChild(
+        document.createElement("textarea"),
+      );
+      insertArea.className = insertAreaClass;
+      insertArea.placeholder = "Insert new element here";
+      const submitInsert = insertLine.appendChild(
+        document.createElement("button"),
+      );
+      submitInsert.className = submitButtonClass;
+      submitInsert.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="10.5" height="10.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check-icon lucide-check"><path d="M20 6 9 17l-5-5"/></svg>`;
+      submitInsert.onclick = () => {
+        const value = insertArea.value.trim();
+        if (value) {
+          // TS is dumb...
+          this.onInsert!(value);
+          insertArea.value = "";
+          insertLine.classList.add("hidden");
+        }
+      };
+    }
 
     return wrap;
   }
@@ -392,31 +412,51 @@ function editDecorations(
               ? [...currentPath]
               : [...currentPath, currentIndex];
 
-          children.forEach((child, idx) => {
+          if (children.length === 0) {
+            const openTag = node.node.getChild("JSXOpenTag");
+            if (!openTag) {
+              break;
+            }
             const deco = Decoration.widget({
-              widget: new NodeEditWidget(
-                ++cnt,
-                () => {
-                  copyNode(view, child.from, child.to);
-                  addEditRef.current(getSketch, path, nodeCopy(index(idx)));
-                },
-                () => {
-                  removeNode(view, child.from, child.to);
-                  addEditRef.current(getSketch, path, nodeDelete(index(idx)));
-                },
-                (node) => {
-                  insertNode(view, node, child.to);
+              widget: new NodeEditWidget(++cnt, {
+                onInsert: (node) => {
+                  insertNode(view, node, openTag.to);
                   addEditRef.current(
                     getSketch,
                     path,
-                    nodeInsert(index(idx), parse(node)),
+                    nodeInsert(index(0), parse(node)),
                   );
                 },
-              ),
+              }),
               side: 1,
             });
-            widgets.push(deco.range(child.to));
-          });
+            widgets.push(deco.range(openTag.to));
+          } else {
+            children.forEach((child, idx) => {
+              const deco = Decoration.widget({
+                widget: new NodeEditWidget(++cnt, {
+                  onCopy: () => {
+                    copyNode(view, child.from, child.to);
+                    addEditRef.current(getSketch, path, nodeCopy(index(idx)));
+                  },
+                  onRemove: () => {
+                    removeNode(view, child.from, child.to);
+                    addEditRef.current(getSketch, path, nodeDelete(index(idx)));
+                  },
+                  onInsert: (node) => {
+                    insertNode(view, node, child.to);
+                    addEditRef.current(
+                      getSketch,
+                      path,
+                      nodeInsert(index(idx), parse(node)),
+                    );
+                  },
+                }),
+                side: 1,
+              });
+              widgets.push(deco.range(child.to));
+            });
+          }
           break;
         }
       }
