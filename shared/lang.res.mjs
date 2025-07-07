@@ -95,17 +95,19 @@ function const__decode(v) {
   return Spice.error(undefined, "Invalid variant constructor", Belt_Array.getExn(v, 0));
 }
 
-function label(param_0) {
+function label(param_0, param_1) {
   return {
     TAG: "Label",
-    _0: param_0
+    _0: param_0,
+    _1: param_1
   };
 }
 
 function label_encode(v) {
   return [
     "Label",
-    Spice.intToJson(v._0)
+    Spice.intToJson(v._0),
+    Spice.nullToJson(Spice.intToJson, v._1)
   ];
 }
 
@@ -118,26 +120,40 @@ function label_decode(v) {
   }
   let match = Belt_Array.getExn(v, 0);
   if (match === "Label") {
-    if (v.length !== 2) {
+    if (v.length !== 3) {
       return Spice.error(undefined, "Invalid number of arguments to variant constructor", v);
     }
-    let v0 = Spice.intFromJson(Belt_Array.getExn(v, 1));
-    if (v0.TAG === "Ok") {
+    let match$1 = Spice.intFromJson(Belt_Array.getExn(v, 1));
+    let extra = Belt_Array.getExn(v, 2);
+    let match$2 = Spice.nullFromJson(Spice.intFromJson, extra);
+    if (match$1.TAG === "Ok") {
+      if (match$2.TAG === "Ok") {
+        return {
+          TAG: "Ok",
+          _0: {
+            TAG: "Label",
+            _0: match$1._0,
+            _1: match$2._0
+          }
+        };
+      }
+      let e = match$2._0;
       return {
-        TAG: "Ok",
+        TAG: "Error",
         _0: {
-          TAG: "Label",
-          _0: v0._0
+          path: "[1]" + e.path,
+          message: e.message,
+          value: e.value
         }
       };
     }
-    let e = v0._0;
+    let e$1 = match$1._0;
     return {
       TAG: "Error",
       _0: {
-        path: "[0]" + e.path,
-        message: e.message,
-        value: e.value
+        path: "[0]" + e$1.path,
+        message: e$1.message,
+        value: e$1.value
       }
     };
   }

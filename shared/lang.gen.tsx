@@ -11,7 +11,8 @@ export type const_ =
     { TAG: "String"; _0: string }
   | { TAG: "Int"; _0: number };
 
-export type label = { TAG: "Label"; _0: number };
+export type label = 
+    { TAG: "Label"; _0: number; _1: (null | number) };
 
 export type attr_value = 
     { TAG: "AttrConst"; _0: const_ }
@@ -62,7 +63,7 @@ export const string: (_1:string) => const_ = langJS.string as any;
 
 export const int: (_1:number) => const_ = langJS.int as any;
 
-export const label: (_1:number) => label = langJS.label as any;
+export const label: (_1:number, _2:(null | number)) => label = langJS.label as any;
 
 export const index: (_1:number) => index = langJS.index as any;
 

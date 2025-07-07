@@ -4,7 +4,7 @@ type const_ =
   | Int(int)
 
 @spice @genType @deriving(accessors)
-type label = Label(int)
+type label = Label(int, Js.null<int>)
 
 @spice @genType
 type attr_value = AttrConst(const_) | AttrFunc(label)
