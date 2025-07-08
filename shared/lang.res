@@ -106,6 +106,7 @@ let parse: string => tree = prog => {
   }
 }
 
+// TODO: Rename this to `result` with `ok` and `error` fields
 type synthesisResult = {
   code?: string,
   error?: string,
@@ -115,7 +116,7 @@ type synthesisResult = {
 external _synthesize: (string, string) => synthesisResult = "synthesize"
 
 @module("./lang.bc.js")
-external _prompts: (string, string) => 'prompts = "prompts"
+external _extractParams: (string, string) => synthesisResult = "extractParams"
 
 @genType
 let synthesize = (prog, steps_array) => {
@@ -126,7 +127,17 @@ let synthesize = (prog, steps_array) => {
     ->JSON.Encode.array
     ->JSON.stringify
   Console.debug2("Stringified steps:", steps)
-  // FIXME: Experimenting
-  Console.debug2("Prompts:", _prompts(prog, steps))
   _synthesize(prog, steps)
+}
+
+@genType
+let extractParams = (prog, steps_array) => {
+  // Convert the array of array of steps to a string representation
+  let steps =
+    steps_array
+    ->Array.map(steps => steps->Array.map(step => step->demo_step_encode)->JSON.Encode.array)
+    ->JSON.Encode.array
+    ->JSON.stringify
+  Console.debug2("Stringified steps:", steps)
+  _extractParams(prog, steps)
 }

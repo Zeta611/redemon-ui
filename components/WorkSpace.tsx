@@ -12,6 +12,7 @@ import {
   action,
   action_type,
   edit,
+  extractParams,
   index,
   label,
   synthesize,
@@ -20,15 +21,20 @@ import {
 } from "@/shared/lang.gen";
 import { fromArray } from "@/shared/utils";
 
-const sample = `<div className="flex flex-col items-center">
-  <div className="font-semibold text-lg">{0}</div>
+const sample = `<div className="flex flex-col items-center gap-2">
+  <div className="text-lg font-semibold"></div>
   <button
-    className="border-none bg-stone-500 text-white px-2 py-1 rounded"
+    className="rounded border-none bg-stone-500 px-2 py-1 text-white"
     onClick={$0}
   >
-    Increment
+    Set text
   </button>
-  <input value="" onChange={$1} />
+  <input
+    type="text"
+    value=""
+    onChange={$1}
+    className="w-16 rounded border border-stone-300 px-2 py-1 text-center focus:border-transparent focus:ring-2 focus:ring-orange-300 focus:outline-none"
+  />
 </div>
 `;
 
@@ -166,21 +172,6 @@ export default function WorkSpace() {
   }
 
   function synthesizeWithSketchAndTimelines() {
-    // FIXME: Test code
-    (async () => {
-      const response = await fetch("/api/llm", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          question: "What is the color of the sky?",
-        }),
-      });
-      const { answer } = await response.json();
-      console.log("LLM response:", answer);
-    })();
-
     if (lockedSketch.current === null) {
       console.error("Sketch is not locked, cannot synthesize. This is a bug.");
       return;
@@ -197,16 +188,36 @@ export default function WorkSpace() {
         timelineToDemoSteps([...timeline]),
       );
       console.debug("Demo steps array:", demoStepsArr);
-      const result = synthesize(sketch, demoStepsArr);
-      if (result.error) {
-        console.error("Synthesis error:", result.error);
+      // const result = synthesize(sketch, demoStepsArr);
+
+      // if (result.error) {
+      //   console.info(
+      //     "Synthesis failed using the enumerative backend:",
+      //     result.error,
+      //   );
+
+      const params = extractParams(sketch, demoStepsArr);
+      if (params.error) {
+        console.error("This is a bug. Failed to extract params:", params.error);
         return;
       }
+      (async () => {
+        const response = await fetch("/api/llm", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ skeleton: params.code! }),
+        });
+        const { code } = await response.json();
 
-      console.info("Synthesis result:", result.code!);
-      setSynthesized(result.code!);
+        setSynthesized(code);
+      })();
+
+      // } else {
+      //   console.info("Synthesis result:", result.code!);
+      //   setSynthesized(result.code!);
+      // }
     } catch (e) {
-      console.error("Synthesis failed:", e);
+      console.error("This is a bug. All exceptions should be handled", e);
     }
   }
 

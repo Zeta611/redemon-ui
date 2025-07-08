@@ -973,11 +973,21 @@ function _prompts(prim0, prim1) {
   return LangBcJs.prompts(prim0, prim1);
 }
 
+function _extractParams(prim0, prim1) {
+  return LangBcJs.extractParams(prim0, prim1);
+}
+
 function synthesize(prog, steps_array) {
   let steps = JSON.stringify(steps_array.map(steps => steps.map(demo_step_encode)));
   console.debug("Stringified steps:", steps);
   console.debug("Prompts:", LangBcJs.prompts(prog, steps));
   return LangBcJs.synthesize(prog, steps);
+}
+
+function extractParams(prog, steps_array) {
+  let steps = JSON.stringify(steps_array.map(steps => steps.map(demo_step_encode)));
+  console.debug("Stringified steps:", steps);
+  return LangBcJs.extractParams(prog, steps);
 }
 
 export {
@@ -1022,6 +1032,8 @@ export {
   parse,
   _synthesize,
   _prompts,
+  _extractParams,
   synthesize,
+  extractParams,
 }
 /* ./lang.bc.js Not a pure module */

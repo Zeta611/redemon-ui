@@ -86,3 +86,5 @@ export const timelineToDemoSteps: (timeline:timeline) => demo_steps = langJS.tim
 export const parse: (prog:string) => tree = langJS.parse as any;
 
 export const synthesize: (prog:string, steps_array:Array<demo_step[]>) => synthesisResult = langJS.synthesize as any;
+
+export const extractParams: (prog:string, steps_array:Array<demo_step[]>) => synthesisResult = langJS.extractParams as any;
