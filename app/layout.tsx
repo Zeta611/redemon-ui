@@ -2,8 +2,6 @@ import type { Metadata } from "next";
 import { Montserrat, Tsukimi_Rounded } from "next/font/google";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
-import { Separator } from "@/ui/separator";
-import Bar from "@/components/Bar";
 
 const tsukimiRounded = Tsukimi_Rounded({
   weight: ["500", "600", "700"],
@@ -32,8 +30,6 @@ export default function RootLayout({
       <body
         className={`${tsukimiRounded.variable} ${montserrat.variable} flex h-screen w-screen flex-col font-sans antialiased`}
       >
-        <Bar />
-        <Separator />
         {children}
         <Analytics />
       </body>
