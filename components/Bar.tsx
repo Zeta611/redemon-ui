@@ -11,7 +11,11 @@ import {
   MenubarTrigger,
 } from "@/ui/menubar";
 
-export default function Bar() {
+type BarProps = {
+  setSampleName: (name: string | undefined) => void;
+};
+
+export default function Bar({ setSampleName }: BarProps) {
   return (
     <div className="dots-dense dots">
       <div className="to-accent flex items-center gap-7 bg-linear-to-l to-85% px-3 py-2">
@@ -27,8 +31,15 @@ export default function Bar() {
               <MenubarSub>
                 <MenubarSubTrigger>Examples</MenubarSubTrigger>
                 <MenubarSubContent>
-                  <MenubarItem>Simple</MenubarItem>
-                  <MenubarItem>Complex</MenubarItem>
+                  <MenubarItem onClick={() => setSampleName("Counter")}>
+                    Counter
+                  </MenubarItem>
+                  <MenubarItem onClick={() => setSampleName("Text setter")}>
+                    Text setter
+                  </MenubarItem>
+                  <MenubarItem onClick={() => setSampleName("Todo list")}>
+                    Todo list
+                  </MenubarItem>
                 </MenubarSubContent>
               </MenubarSub>
               <MenubarSeparator />

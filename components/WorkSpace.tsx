@@ -20,6 +20,7 @@ import {
   timelineToDemoSteps,
 } from "@/shared/lang.gen";
 import { fromArray } from "@/shared/utils";
+import sampleSketches from "@/shared/sampleSketches";
 
 type TimelineInfo = {
   timeline: timeline;
@@ -27,11 +28,14 @@ type TimelineInfo = {
 };
 
 type WorkSpaceProps = {
-  sample?: string;
+  sampleName?: string;
 };
 
-export default function WorkSpace({ sample }: WorkSpaceProps) {
-  const [sketch, setSketch] = useState(sample || "");
+export default function WorkSpace({ sampleName }: WorkSpaceProps) {
+  const [chosenSample, setChosenSample] = useState(sampleName);
+  const [sketch, setSketch] = useState(() =>
+    chosenSample ? sampleSketches.get(chosenSample) || "" : "",
+  );
   const [locked, setLocked] = useState(false);
 
   function setLockedAndResetSketchAndTimelines(locked: boolean) {
@@ -65,6 +69,19 @@ export default function WorkSpace({ sample }: WorkSpaceProps) {
     { timeline: [], sketch },
   ]);
   const [workingTimeline, setWorkingTimeline] = useState<number | null>(0);
+
+  // NOTE: If sampleName has changed, update the sketch and reset
+  if (sampleName && chosenSample !== sampleName) {
+    setChosenSample(sampleName);
+    const sample = sampleSketches.get(sampleName);
+    if (!sample) {
+      console.error(`Sample sketch "${sampleName}" not found.`);
+    } else {
+      setLocked(false);
+      resetTimelines();
+      setSketch(sample);
+    }
+  }
 
   function setWorkingTimelineAndResetSketch(idx: number | null) {
     if (lockedSketch.current === null) {
