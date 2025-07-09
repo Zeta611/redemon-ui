@@ -188,34 +188,36 @@ export default function WorkSpace() {
         timelineToDemoSteps([...timeline]),
       );
       console.debug("Demo steps array:", demoStepsArr);
-      // const result = synthesize(sketch, demoStepsArr);
+      const result = synthesize(sketch, demoStepsArr);
 
-      // if (result.error) {
-      //   console.info(
-      //     "Synthesis failed using the enumerative backend:",
-      //     result.error,
-      //   );
+      if (result.error) {
+        console.info(
+          "Synthesis failed using the enumerative backend:",
+          result.error,
+        );
 
-      const params = extractParams(sketch, demoStepsArr);
-      if (params.error) {
-        console.error("This is a bug. Failed to extract params:", params.error);
-        return;
+        const params = extractParams(sketch, demoStepsArr);
+        if (params.error) {
+          console.error(
+            "This is a bug. Failed to extract params:",
+            params.error,
+          );
+          return;
+        }
+        (async () => {
+          const response = await fetch("/api/llm", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ skeleton: params.code! }),
+          });
+          const { code } = await response.json();
+
+          setSynthesized(code);
+        })();
+      } else {
+        console.info("Synthesis result:", result.code!);
+        setSynthesized(result.code!);
       }
-      (async () => {
-        const response = await fetch("/api/llm", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ skeleton: params.code! }),
-        });
-        const { code } = await response.json();
-
-        setSynthesized(code);
-      })();
-
-      // } else {
-      //   console.info("Synthesis result:", result.code!);
-      //   setSynthesized(result.code!);
-      // }
     } catch (e) {
       console.error("This is a bug. All exceptions should be handled", e);
     }
