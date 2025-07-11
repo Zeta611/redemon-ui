@@ -248,12 +248,7 @@ export default function WorkSpace({ sampleName }: WorkSpaceProps) {
         </ResizablePanelGroup>
       </ResizablePanel>
       <ResizableHandle withHandle />
-      <ResizablePanel
-        defaultSize={25}
-        minSize={25}
-        collapsible
-        collapsedSize={8}
-      >
+      <ResizablePanel defaultSize={25} collapsible collapsedSize={8}>
         <TimelinePanes
           locked={locked}
           timelines={timelines.map(({ timeline }) => timeline)}
