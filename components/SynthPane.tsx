@@ -4,7 +4,8 @@ import CodeMirror from "@uiw/react-codemirror";
 import { githubLight } from "@uiw/codemirror-theme-github";
 import { javascript } from "@codemirror/lang-javascript";
 import { EditorView } from "@codemirror/view";
-import { useEffect, useRef, useState } from "react";
+import { useState, useEffect, useRef } from "react";
+import { Columns2, Rows2 } from "lucide-react";
 import root from "react-shadow";
 import { format, stubHoles } from "@/shared/sketch";
 import { Button } from "@/ui/button";
@@ -47,9 +48,11 @@ export default function SynthPane({ synthesized }: SynthPaneProps) {
     })();
   }, [code]);
 
+  const [verticalMode, setVerticalMode] = useState(true);
+
   return (
     <LiveProvider code={code} scope={{ useState }} noInline>
-      <ResizablePanelGroup direction="vertical">
+      <ResizablePanelGroup direction={verticalMode ? "vertical" : "horizontal"}>
         <ResizablePanel defaultSize={60} minSize={30}>
           <div className="flex h-full flex-col">
             <div className="flex h-8 items-center justify-between px-2">
@@ -58,6 +61,30 @@ export default function SynthPane({ synthesized }: SynthPaneProps) {
                 <span className="font-rounded">Synthesized</span>
               </div>
               <div className="flex h-4 items-center gap-3">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="size-5 text-lg"
+                      onClick={() => setVerticalMode((m) => !m)}
+                    >
+                      {verticalMode ? (
+                        <Rows2 className="size-4 text-orange-400" />
+                      ) : (
+                        <Columns2 className="size-4 text-orange-400" />
+                      )}
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p className="text-sm">
+                      {verticalMode
+                        ? "Switch to horizontal split"
+                        : "Switch to vertical split"}
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+                <Separator orientation="vertical" />
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button

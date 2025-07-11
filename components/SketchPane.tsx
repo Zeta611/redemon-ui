@@ -4,7 +4,8 @@ import { githubLight } from "@uiw/codemirror-theme-github";
 import { javascript } from "@codemirror/lang-javascript";
 import { EditorView } from "@codemirror/view";
 import root from "react-shadow";
-import { useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
+import { Columns2, Rows2 } from "lucide-react";
 import {
   ResizableHandle,
   ResizablePanel,
@@ -69,12 +70,14 @@ export default function SketchPane({
     setSketch(updateValueForLabel(sketch, label, value));
   };
 
+  const [verticalMode, setVerticalMode] = useState(true);
+
   return (
     <LiveProvider
       code={preprocessSketch(sketch)}
       scope={{ addAction, setSketch, currentInputRef }}
     >
-      <ResizablePanelGroup direction="vertical">
+      <ResizablePanelGroup direction={verticalMode ? "vertical" : "horizontal"}>
         <ResizablePanel defaultSize={60} minSize={30}>
           <div className="flex h-full flex-col">
             <div className="flex h-8 items-center justify-between px-2">
@@ -104,6 +107,30 @@ export default function SketchPane({
                       {locked
                         ? "Edit (Timelines will be reset!)"
                         : "Lock (Ready to demonstrate!)"}
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+                <Separator orientation="vertical" />
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="size-5 text-lg"
+                      onClick={() => setVerticalMode((m) => !m)}
+                    >
+                      {verticalMode ? (
+                        <Rows2 className="size-4 text-orange-400" />
+                      ) : (
+                        <Columns2 className="size-4 text-orange-400" />
+                      )}
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p className="text-sm">
+                      {verticalMode
+                        ? "Switch to horizontal split"
+                        : "Switch to vertical split"}
                     </p>
                   </TooltipContent>
                 </Tooltip>
