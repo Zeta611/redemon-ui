@@ -192,7 +192,33 @@ export default function WorkSpace({ sampleName }: WorkSpaceProps) {
         timelineToDemoSteps([...timeline]),
       );
       console.debug("Demo steps array:", demoStepsArr);
-      const result = synthesize(sketch, demoStepsArr);
+      let result;
+      try {
+        // FIXME: This is a temporary workaround to work with the synthesis backend not catching exceptions.
+        result = synthesize(sketch, demoStepsArr);
+      } catch (e) {
+        console.error("This is a bug. All exceptions should be handled", e);
+
+        const params = extractParams(sketch, demoStepsArr);
+        if (params.error) {
+          console.error(
+            "This is a bug. Failed to extract params:",
+            params.error,
+          );
+          return;
+        }
+        (async () => {
+          const response = await fetch("/api/llm", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ skeleton: params.code! }),
+          });
+          const { code } = await response.json();
+
+          setSynthesized(code);
+        })();
+        return;
+      }
 
       if (result.error) {
         console.info(

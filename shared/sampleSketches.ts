@@ -71,4 +71,119 @@ sketches.set(
 </div>`,
 );
 
+sketches.set(
+  "Calculator",
+  `<div className="grid grid-rows-6 grid-cols-4 gap-1">
+  <div className="text-lg font-semibold col-span-4 text-right bg-stone-200 rounded px-2">{0}</div>
+  <button
+    className="rounded border-none bg-stone-400 text-white"
+    onClick={$0}
+  >
+    AC
+  </button>
+  <button
+    className="rounded border-none bg-stone-400 text-white"
+    onClick={$1}
+  >
+    +/-
+  </button>
+  <button
+    className="rounded border-none bg-stone-400 text-white"
+    onClick={$2}
+  >
+    %
+  </button>
+  <button
+    className="rounded border-none bg-orange-400 text-white"
+    onClick={$3}
+  >
+    /
+  </button>
+  <button
+    className="rounded border-none bg-stone-500 text-white"
+    onClick={$4}
+  >
+    7
+  </button>
+  <button
+    className="rounded border-none bg-stone-500 text-white"
+    onClick={$5}
+  >
+    8
+  </button>
+  <button
+    className="rounded border-none bg-stone-500 text-white"
+    onClick={$6}
+  >
+    9
+  </button>
+  <button
+    className="rounded border-none bg-orange-400 text-white"
+    onClick={$7}
+  >
+    x
+  </button>
+  <button
+    className="rounded border-none bg-stone-500 text-white"
+    onClick={$8}
+  >
+    4
+  </button>
+  <button
+    className="rounded border-none bg-stone-500 text-white"
+    onClick={$9}
+  >
+    5
+  </button>
+  <button
+    className="rounded border-none bg-stone-500 text-white"
+    onClick={$10}
+  >
+    6
+  </button>
+  <button
+    className="rounded border-none bg-orange-400 text-white"
+    onClick={$11}
+  >
+    -
+  </button>
+  <button
+    className="rounded border-none bg-stone-500 text-white"
+    onClick={$12}
+  >
+    1
+  </button>
+  <button
+    className="rounded border-none bg-stone-500 text-white"
+    onClick={$13}
+  >
+    2
+  </button>
+  <button
+    className="rounded border-none bg-stone-500 text-white"
+    onClick={$14}
+  >
+    3
+  </button>
+  <button
+    className="rounded border-none bg-orange-400 text-white"
+    onClick={$15}
+  >
+    +
+  </button>
+  <button
+    className="col-span-3 rounded border-none bg-stone-500 text-white"
+    onClick={$16}
+  >
+    0
+  </button>
+  <button
+    className="rounded border-none bg-orange-400 text-white"
+    onClick={$17}
+  >
+    =
+  </button>
+</div>`,
+);
+
 export default sketches;

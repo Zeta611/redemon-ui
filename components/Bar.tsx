@@ -37,6 +37,9 @@ export default function Bar({ setSampleName }: BarProps) {
                   <MenubarItem onClick={() => setSampleName("Text setter")}>
                     Text setter
                   </MenubarItem>
+                  <MenubarItem onClick={() => setSampleName("Calculator")}>
+                    Calculator
+                  </MenubarItem>
                   <MenubarItem onClick={() => setSampleName("Todo list")}>
                     Todo list
                   </MenubarItem>
