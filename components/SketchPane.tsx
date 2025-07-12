@@ -158,7 +158,7 @@ export default function SketchPane({
               extensions={extensions}
               onChange={setSketch}
               height="100%"
-              className="h-full text-sm"
+              className="flex-1 overflow-auto text-sm"
             />
           </div>
         </ResizablePanel>
