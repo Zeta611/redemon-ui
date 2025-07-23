@@ -163,7 +163,10 @@ export default function SketchPane({
           </div>
         </ResizablePanel>
         <ResizableHandle withHandle={false} />
-        <ResizablePanel className="dots-wide dots flex items-center justify-center">
+        <ResizablePanel
+          defaultSize={40}
+          className="dots-wide dots flex items-center justify-center"
+        >
           <div className="flex flex-col items-end gap-1">
             <root.div
               ref={shadowRoot}

@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import { Loader } from "lucide-react";
 import {
   ResizableHandle,
   ResizablePanel,
@@ -63,6 +64,7 @@ export default function WorkSpace({ sampleName }: WorkSpaceProps) {
   }, [sketch, locked]);
 
   const [synthesized, setSynthesized] = useState("");
+  const [synthesizing, setSynthesizing] = useState(false);
 
   // [timeline, string] is a pair of a timeline and the final state of the sketch for that timeline.
   const [timelines, setTimelines] = useState<TimelineInfo[]>([
@@ -180,6 +182,13 @@ export default function WorkSpace({ sampleName }: WorkSpaceProps) {
       console.error("Sketch is not locked, cannot synthesize. This is a bug.");
       return;
     }
+    if (synthesizing) {
+      console.warn("Already synthesizing, ignoring the request.");
+      return;
+    }
+
+    setSynthesizing(true);
+
     const sketch = lockedSketch.current;
 
     try {
@@ -205,6 +214,7 @@ export default function WorkSpace({ sampleName }: WorkSpaceProps) {
             "This is a bug. Failed to extract params:",
             params.error,
           );
+          setSynthesizing(false);
           return;
         }
         (async () => {
@@ -216,6 +226,7 @@ export default function WorkSpace({ sampleName }: WorkSpaceProps) {
           const { code } = await response.json();
 
           setSynthesized(code);
+          setSynthesizing(false);
         })();
         return;
       }
@@ -232,6 +243,7 @@ export default function WorkSpace({ sampleName }: WorkSpaceProps) {
             "This is a bug. Failed to extract params:",
             params.error,
           );
+          setSynthesizing(false);
           return;
         }
         (async () => {
@@ -243,19 +255,22 @@ export default function WorkSpace({ sampleName }: WorkSpaceProps) {
           const { code } = await response.json();
 
           setSynthesized(code);
+          setSynthesizing(false);
         })();
       } else {
         console.info("Synthesis result:", result.code!);
         setSynthesized(result.code!);
+        setSynthesizing(false);
       }
     } catch (e) {
       console.error("This is a bug. All exceptions should be handled", e);
+      setSynthesizing(false);
     }
   }
 
   return (
     <ResizablePanelGroup direction="vertical">
-      <ResizablePanel>
+      <ResizablePanel defaultSize={75}>
         <ResizablePanelGroup direction="horizontal">
           <ResizablePanel>
             <SketchPane
@@ -274,7 +289,17 @@ export default function WorkSpace({ sampleName }: WorkSpaceProps) {
         </ResizablePanelGroup>
       </ResizablePanel>
       <ResizableHandle withHandle />
-      <ResizablePanel defaultSize={25} collapsible collapsedSize={8}>
+      <ResizablePanel
+        className="relative"
+        defaultSize={25}
+        collapsible
+        collapsedSize={8}
+      >
+        {synthesizing && (
+          <div className="bg-accent absolute inset-0 z-10 flex items-center justify-center opacity-70">
+            <Loader className="text-primary h-8 w-8 animate-spin" />
+          </div>
+        )}
         <TimelinePanes
           locked={locked}
           timelines={timelines.map(({ timeline }) => timeline)}

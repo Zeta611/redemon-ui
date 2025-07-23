@@ -114,7 +114,10 @@ export default function SynthPane({ synthesized }: SynthPaneProps) {
           </div>
         </ResizablePanel>
         <ResizableHandle withHandle={false} />
-        <ResizablePanel className="dots-wide dots flex items-center justify-center">
+        <ResizablePanel
+          defaultSize={40}
+          className="dots-wide dots flex items-center justify-center"
+        >
           <root.div
             ref={shadowRoot}
             className="bg-background border-ring rounded-lg border-3 p-3"
