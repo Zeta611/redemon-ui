@@ -29,10 +29,11 @@ type TimelineInfo = {
 };
 
 type WorkSpaceProps = {
+  apiKey?: string;
   sampleName?: string;
 };
 
-export default function WorkSpace({ sampleName }: WorkSpaceProps) {
+export default function WorkSpace({ apiKey, sampleName }: WorkSpaceProps) {
   const [chosenSample, setChosenSample] = useState(sampleName);
   const [sketch, setSketch] = useState(() =>
     chosenSample ? sampleSketches.get(chosenSample) || "" : "",
@@ -220,13 +221,20 @@ export default function WorkSpace({ sampleName }: WorkSpaceProps) {
         (async () => {
           const response = await fetch("/api/llm", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+              "Content-Type": "application/json",
+              "x-gemini-api-key": apiKey || "",
+            },
             body: JSON.stringify({ skeleton: params.code! }),
           });
-          const { code } = await response.json();
-
-          setSynthesized(code);
-          setSynthesizing(false);
+          try {
+            const { code } = await response.json();
+            setSynthesized(code);
+          } catch (e) {
+            console.error("Failed to parse LLM response:", e);
+          } finally {
+            setSynthesizing(false);
+          }
         })();
         return;
       }
@@ -249,13 +257,20 @@ export default function WorkSpace({ sampleName }: WorkSpaceProps) {
         (async () => {
           const response = await fetch("/api/llm", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+              "Content-Type": "application/json",
+              "x-gemini-api-key": apiKey || "",
+            },
             body: JSON.stringify({ skeleton: params.code! }),
           });
-          const { code } = await response.json();
-
-          setSynthesized(code);
-          setSynthesizing(false);
+          try {
+            const { code } = await response.json();
+            setSynthesized(code);
+          } catch (e) {
+            console.error("Failed to parse LLM response:", e);
+          } finally {
+            setSynthesizing(false);
+          }
         })();
       } else {
         console.info("Synthesis result:", result.code!);

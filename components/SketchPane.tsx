@@ -102,7 +102,7 @@ export default function SketchPane({
                       </Label>
                     </div>
                   </TooltipTrigger>
-                  <TooltipContent>
+                  <TooltipContent side="bottom">
                     <p className="text-sm">
                       {locked
                         ? "Edit (Timelines will be reset!)"
@@ -126,7 +126,7 @@ export default function SketchPane({
                       )}
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent>
+                  <TooltipContent side="bottom">
                     <p className="text-sm">
                       {verticalMode
                         ? "Switch to horizontal split"
@@ -146,7 +146,7 @@ export default function SketchPane({
                       ✨
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent>
+                  <TooltipContent side="bottom">
                     <p className="text-sm">Format</p>
                   </TooltipContent>
                 </Tooltip>

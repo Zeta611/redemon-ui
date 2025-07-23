@@ -5,8 +5,6 @@ import { NextResponse } from "next/server";
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
-const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
-
 const systemInstruction = readFileSync(
   path.join(process.cwd(), "app", "api", "llm", "systemInstruction.txt"),
   "utf8",
@@ -14,6 +12,7 @@ const systemInstruction = readFileSync(
 
 export async function POST(req: Request) {
   const { skeleton } = await req.json();
+  const apiKey = req.headers.get("x-gemini-api-key");
 
   if (!skeleton) {
     return NextResponse.json(
@@ -22,8 +21,15 @@ export async function POST(req: Request) {
     );
   }
 
-  console.debug("Received skeleton:", skeleton);
-  console.debug("System instruction:", systemInstruction);
+  const activeApiKey = apiKey || GEMINI_API_KEY;
+  if (!activeApiKey) {
+    return NextResponse.json(
+      { error: "Please provide an API key in the request." },
+      { status: 400 },
+    );
+  }
+
+  const ai = new GoogleGenAI({ apiKey: activeApiKey });
 
   const response = await ai.models.generateContent({
     model: "gemini-2.0-flash-001",

@@ -76,7 +76,7 @@ export default function SynthPane({ synthesized }: SynthPaneProps) {
                       )}
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent>
+                  <TooltipContent side="bottom">
                     <p className="text-sm">
                       {verticalMode
                         ? "Switch to horizontal split"
@@ -96,7 +96,7 @@ export default function SynthPane({ synthesized }: SynthPaneProps) {
                       ✨
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent>
+                  <TooltipContent side="bottom">
                     <p className="text-sm">Format</p>
                   </TooltipContent>
                 </Tooltip>

@@ -10,6 +10,7 @@ import {
   MenubarSubTrigger,
   MenubarTrigger,
 } from "@/ui/menubar";
+import { DialogTrigger } from "@/ui/dialog";
 
 type BarProps = {
   setSampleName: (name: string | undefined) => void;
@@ -51,8 +52,13 @@ export default function Bar({ setSampleName }: BarProps) {
           </MenubarMenu>
           <MenubarMenu>
             <MenubarTrigger className="text-md font-medium">
-              About
+              Settings
             </MenubarTrigger>
+            <MenubarContent>
+              <DialogTrigger asChild>
+                <MenubarItem>API Key</MenubarItem>
+              </DialogTrigger>
+            </MenubarContent>
           </MenubarMenu>
         </Menubar>
       </div>
