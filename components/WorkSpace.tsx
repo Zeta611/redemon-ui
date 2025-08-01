@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useContext } from "react";
 import { Loader } from "lucide-react";
 import {
   ResizableHandle,
@@ -22,6 +22,7 @@ import {
 } from "@/shared/lang.gen";
 import { fromArray } from "@/shared/utils";
 import sampleSketches from "@/shared/sampleSketches";
+import { ApiKeyContext } from "@/contexts/ApiKeyContext";
 
 type TimelineInfo = {
   timeline: timeline;
@@ -29,11 +30,12 @@ type TimelineInfo = {
 };
 
 type WorkSpaceProps = {
-  apiKey?: string;
   sampleName?: string;
 };
 
-export default function WorkSpace({ apiKey, sampleName }: WorkSpaceProps) {
+export default function WorkSpace({ sampleName }: WorkSpaceProps) {
+  const apiKey = useContext(ApiKeyContext);
+
   const [chosenSample, setChosenSample] = useState(sampleName);
   const [sketch, setSketch] = useState(() =>
     chosenSample ? sampleSketches.get(chosenSample) || "" : "",

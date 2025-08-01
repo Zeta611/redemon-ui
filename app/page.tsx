@@ -15,6 +15,7 @@ import {
 } from "@/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ApiKeyContext } from "@/contexts/ApiKeyContext";
 
 export default function Home() {
   const [sampleName, setSampleName] = useState<string | undefined>(undefined);
@@ -63,7 +64,9 @@ export default function Home() {
       </DialogContent>
       <Bar setSampleName={setSampleName} />
       <Separator />
-      <WorkSpace apiKey={apiKey} sampleName={sampleName} />
+      <ApiKeyContext value={apiKey}>
+        <WorkSpace sampleName={sampleName} />
+      </ApiKeyContext>
     </Dialog>
   );
 }
