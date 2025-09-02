@@ -114,10 +114,10 @@ export default function WorkSpace({ sampleName }: WorkSpaceProps) {
     const sketch = lockedSketch.current;
     setSketch(sketch);
 
-    setTimelines((timelines) => timelines.filter((_, i) => i !== idx));
-    setTimelines((timelines) =>
-      timelines.length === 0 ? [{ timeline: [], sketch }] : timelines,
-    );
+    setTimelines((timelines) => {
+      const ts = timelines.filter((_, i) => i !== idx);
+      return ts.length === 0 ? [{ timeline: [], sketch }] : ts;
+    });
     if (workingTimeline === idx) {
       setWorkingTimeline(null);
     }
