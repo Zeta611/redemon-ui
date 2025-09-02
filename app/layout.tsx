@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Montserrat, Tsukimi_Rounded } from "next/font/google";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
+import { ReactScan } from "@/components/ReactScan";
 
 const tsukimiRounded = Tsukimi_Rounded({
   weight: ["500", "600", "700"],
@@ -27,6 +28,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <ReactScan />
       <body
         className={`${tsukimiRounded.variable} ${montserrat.variable} flex h-screen w-screen flex-col font-sans antialiased`}
       >
