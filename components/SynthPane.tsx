@@ -17,6 +17,7 @@ import {
   ResizablePanelGroup,
 } from "@/ui/resizable";
 import injectStyles from "@/shared/injectStyles";
+import { useAppState } from "@/store/useAppState";
 
 const extensions = [
   javascript({ jsx: true }),
@@ -24,20 +25,22 @@ const extensions = [
   EditorView.lineWrapping,
 ];
 
-type SynthPaneProps = {
-  synthesized: string;
-};
-
-export default function SynthPane({ synthesized }: SynthPaneProps) {
+export default function SynthPane() {
   const shadowRoot = useRef<HTMLDivElement>(null);
   const [code, setCode] = useState("");
+
+  const { synthesized } = useAppState();
 
   useEffect(() => {
     // Reset code if synthesized is updated
     if (!synthesized) {
       return;
     }
-    (async () => setCode(await format(stubHoles(synthesized), false)))();
+    (async () => {
+      const formatted = await format(stubHoles(synthesized), false);
+      console.debug("Formatted synthesized code:", formatted);
+      setCode(formatted);
+    })();
   }, [synthesized]);
 
   useEffect(() => {

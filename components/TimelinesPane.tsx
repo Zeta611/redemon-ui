@@ -1,31 +1,26 @@
+import { useContext } from "react";
 import { Plus, WandSparkles } from "lucide-react";
-import Timeline from "./Timeline";
+import Timeline from "@/components/Timeline";
 import { Button } from "@/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/ui/tooltip";
 import { cn } from "@/shared/utils";
-import { timeline } from "@/shared/lang.gen";
+import { useAppState } from "@/store/useAppState";
+import { ApiKeyContext } from "@/contexts/ApiKeyContext";
 
-type TimelinesPaneProps = {
-  locked: boolean;
-  timelines: timeline[];
-  addTimeline: () => void;
-  removeTimeline: (index: number) => void;
-  resetTimelines: () => void;
-  workingTimeline: number | null;
-  setWorkingTimeline: (index: number | null) => void;
-  synthesize: () => void;
-};
+export default function TimelinesPane() {
+  const apiKey = useContext(ApiKeyContext);
+  const {
+    lockedSketch,
+    timelines,
+    setWorkingTimeline,
+    addTimeline,
+    removeTimeline,
+    resetTimelines,
+    workingTimelineIdx,
+    synthesizeWithSketchAndTimelines,
+  } = useAppState();
+  const locked = lockedSketch !== null;
 
-export default function TimelinesPane({
-  locked,
-  timelines,
-  addTimeline,
-  removeTimeline,
-  resetTimelines,
-  workingTimeline,
-  setWorkingTimeline,
-  synthesize,
-}: TimelinesPaneProps) {
   return (
     <div className={cn("h-full", locked || "cursor-not-allowed")}>
       <div
@@ -66,12 +61,12 @@ export default function TimelinesPane({
           )}
         >
           <ol className="flex flex-col gap-2">
-            {timelines.map((timeline, index) => (
+            {timelines.map(({ timeline }, index) => (
               <li key={index}>
                 <Timeline
                   timeline={timeline}
                   removeTimeline={() => removeTimeline(index)}
-                  isWorking={workingTimeline === index}
+                  isWorking={workingTimelineIdx === index}
                   setIsWorking={() => {
                     setWorkingTimeline(index);
                   }}
@@ -101,7 +96,7 @@ export default function TimelinesPane({
                   ? "bg-secondary/80 hover:bg-secondary"
                   : "bg-secondary/60",
               )}
-              onClick={synthesize}
+              onClick={() => synthesizeWithSketchAndTimelines(apiKey)}
             >
               <WandSparkles />
               <span className="font-rounded font-bold">Synthesize!</span>

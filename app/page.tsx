@@ -1,4 +1,5 @@
 "use client";
+
 import { useState } from "react";
 import WorkSpace from "@/components/WorkSpace";
 import Bar from "@/components/Bar";
@@ -18,7 +19,6 @@ import { Label } from "@/components/ui/label";
 import { ApiKeyContext } from "@/contexts/ApiKeyContext";
 
 export default function Home() {
-  const [sampleName, setSampleName] = useState<string | undefined>(undefined);
   const [apiKey, setApiKey] = useState<string | undefined>(undefined);
 
   function submitApiKey(e: React.FormEvent<HTMLFormElement>) {
@@ -62,10 +62,10 @@ export default function Home() {
           </DialogFooter>
         </form>
       </DialogContent>
-      <Bar setSampleName={setSampleName} />
+      <Bar />
       <Separator />
       <ApiKeyContext value={apiKey}>
-        <WorkSpace sampleName={sampleName} />
+        <WorkSpace />
       </ApiKeyContext>
     </Dialog>
   );

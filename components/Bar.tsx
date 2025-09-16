@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import {
   Menubar,
@@ -11,12 +13,10 @@ import {
   MenubarTrigger,
 } from "@/ui/menubar";
 import { DialogTrigger } from "@/ui/dialog";
+import { useAppState } from "@/store/useAppState";
 
-type BarProps = {
-  setSampleName: (name: string | undefined) => void;
-};
-
-export default function Bar({ setSampleName }: BarProps) {
+export default function Bar() {
+  const { chooseSample } = useAppState();
   return (
     <div className="dots-dense dots">
       <div className="to-accent flex items-center gap-7 bg-linear-to-l to-85% px-3 py-2">
@@ -32,16 +32,16 @@ export default function Bar({ setSampleName }: BarProps) {
               <MenubarSub>
                 <MenubarSubTrigger>Examples</MenubarSubTrigger>
                 <MenubarSubContent>
-                  <MenubarItem onClick={() => setSampleName("Counter")}>
+                  <MenubarItem onClick={() => chooseSample("Counter")}>
                     Counter
                   </MenubarItem>
-                  <MenubarItem onClick={() => setSampleName("Text setter")}>
+                  <MenubarItem onClick={() => chooseSample("Text setter")}>
                     Text setter
                   </MenubarItem>
-                  <MenubarItem onClick={() => setSampleName("Calculator")}>
+                  <MenubarItem onClick={() => chooseSample("Calculator")}>
                     Calculator
                   </MenubarItem>
-                  <MenubarItem onClick={() => setSampleName("Todo list")}>
+                  <MenubarItem onClick={() => chooseSample("Todo list")}>
                     Todo list
                   </MenubarItem>
                 </MenubarSubContent>

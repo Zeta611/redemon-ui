@@ -7,7 +7,7 @@ export function preprocessSketch(sketch: string) {
   return sketch
     .replaceAll(
       /(?<=onClick\s*=\s*{\s*)\$(\d*)(?=\s*})/g,
-      "() => { addAction($1, 'Click'); }",
+      "() => { addActionToWorkingTimeline($1, 'Click'); }",
     )
     .replaceAll(
       /(?<=onChange\s*=\s*{\s*)\$(\d*)(?=\s*})/g,

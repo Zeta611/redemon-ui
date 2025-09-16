@@ -20,26 +20,21 @@ import { Switch } from "@/ui/switch";
 import { Label } from "@/ui/label";
 import { cn } from "@/shared/utils";
 import injectStyles from "@/shared/injectStyles";
-import { action_type, edit } from "@/shared/lang.gen";
+import { useAppState } from "@/store/useAppState";
 
-type SketchPaneProps = {
-  sketch: string;
-  setSketch: (sketch: string) => void;
-  locked: boolean;
-  setLocked: (locked: boolean) => void;
-  addAction: (hole: number, action_type: action_type, arg?: string) => void;
-  addEdit: (getSketch: () => string, path: number[], edit: edit) => void;
-};
-
-export default function SketchPane({
-  sketch,
-  setSketch,
-  locked,
-  setLocked,
-  addAction,
-  addEdit,
-}: SketchPaneProps) {
+export default function SketchPane() {
   const shadowRoot = useRef<HTMLDivElement>(null);
+
+  const {
+    sketch,
+    setSketch,
+    lockedSketch,
+    lockSketch,
+    unlockSketch,
+    addActionToWorkingTimeline,
+    addEditToWorkingTimeline,
+  } = useAppState();
+  const locked = lockedSketch !== null;
 
   useEffect(() => {
     (async () => {
@@ -50,8 +45,8 @@ export default function SketchPane({
   }, [sketch]);
 
   // Hack to get the current addEdit function in the plugin
-  const addEditRef = useRef(addEdit);
-  addEditRef.current = addEdit;
+  const addEditRef = useRef(addEditToWorkingTimeline);
+  addEditRef.current = addEditToWorkingTimeline;
   const extensions = useMemo(() => {
     console.debug("Updating extensions for SketchPane");
     return [
@@ -65,7 +60,7 @@ export default function SketchPane({
   const currentInputRef = useRef<[number, string]>([0, ""]);
   const submitInput = () => {
     const [label, value] = currentInputRef.current;
-    addAction(label, "Input", value);
+    addActionToWorkingTimeline(label, "Input", value);
     currentInputRef.current = [0, ""];
     setSketch(updateValueForLabel(sketch, label, value));
   };
@@ -75,7 +70,7 @@ export default function SketchPane({
   return (
     <LiveProvider
       code={preprocessSketch(sketch)}
-      scope={{ addAction, setSketch, currentInputRef }}
+      scope={{ addActionToWorkingTimeline, setSketch, currentInputRef }}
     >
       <ResizablePanelGroup direction={verticalMode ? "vertical" : "horizontal"}>
         <ResizablePanel defaultSize={60} minSize={30}>
@@ -95,7 +90,9 @@ export default function SketchPane({
                       <Switch
                         id="lock-switch"
                         checked={locked}
-                        onCheckedChange={setLocked}
+                        onCheckedChange={(locked) =>
+                          locked ? lockSketch() : unlockSketch()
+                        }
                       />
                       <Label className="size-5 text-lg" htmlFor="lock-switch">
                         🔒
