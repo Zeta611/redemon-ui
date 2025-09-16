@@ -12,7 +12,7 @@ import SynthPane from "@/components/SynthPane";
 import { useAppState } from "@/store/useAppState";
 
 export default function WorkSpace() {
-  const { synthesizing } = useAppState();
+  const synthesizing = useAppState.use.synthesizing();
 
   return (
     <ResizablePanelGroup direction="vertical">

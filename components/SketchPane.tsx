@@ -25,15 +25,15 @@ import { useAppState } from "@/store/useAppState";
 export default function SketchPane() {
   const shadowRoot = useRef<HTMLDivElement>(null);
 
-  const {
-    sketch,
-    setSketch,
-    lockedSketch,
-    lockSketch,
-    unlockSketch,
-    addActionToWorkingTimeline,
-    addEditToWorkingTimeline,
-  } = useAppState();
+  const sketch = useAppState.use.sketch();
+  const setSketch = useAppState.use.setSketch();
+  const lockedSketch = useAppState.use.lockedSketch();
+  const lockSketch = useAppState.use.lockSketch();
+  const unlockSketch = useAppState.use.unlockSketch();
+  const addActionToWorkingTimeline =
+    useAppState.use.addActionToWorkingTimeline();
+  const addEditToWorkingTimeline = useAppState.use.addEditToWorkingTimeline();
+
   const locked = lockedSketch !== null;
 
   useEffect(() => {

@@ -29,7 +29,7 @@ export default function SynthPane() {
   const shadowRoot = useRef<HTMLDivElement>(null);
   const [code, setCode] = useState("");
 
-  const { synthesized } = useAppState();
+  const synthesized = useAppState.use.synthesized();
 
   useEffect(() => {
     // Reset code if synthesized is updated

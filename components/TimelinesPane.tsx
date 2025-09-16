@@ -9,16 +9,17 @@ import { ApiKeyContext } from "@/contexts/ApiKeyContext";
 
 export default function TimelinesPane() {
   const apiKey = useContext(ApiKeyContext);
-  const {
-    lockedSketch,
-    timelines,
-    setWorkingTimeline,
-    addTimeline,
-    removeTimeline,
-    resetTimelines,
-    workingTimelineIdx,
-    synthesizeWithSketchAndTimelines,
-  } = useAppState();
+
+  const lockedSketch = useAppState.use.lockedSketch();
+  const timelines = useAppState.use.timelines();
+  const setWorkingTimeline = useAppState.use.setWorkingTimeline();
+  const addTimeline = useAppState.use.addTimeline();
+  const removeTimeline = useAppState.use.removeTimeline();
+  const resetTimelines = useAppState.use.resetTimelines();
+  const workingTimelineIdx = useAppState.use.workingTimelineIdx();
+  const synthesizeWithSketchAndTimelines =
+    useAppState.use.synthesizeWithSketchAndTimelines();
+
   const locked = lockedSketch !== null;
 
   return (
