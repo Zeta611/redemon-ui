@@ -17,6 +17,7 @@ export default function TimelinesPane() {
   const removeTimeline = useAppState.use.removeTimeline();
   const resetTimelines = useAppState.use.resetTimelines();
   const workingTimelineIdx = useAppState.use.workingTimelineIdx();
+  const revertTimelineUpTo = useAppState.use.revertTimelineUpTo();
   const synthesizeWithSketchAndTimelines =
     useAppState.use.synthesizeWithSketchAndTimelines();
 
@@ -71,6 +72,7 @@ export default function TimelinesPane() {
                   setIsWorking={() => {
                     setWorkingTimeline(index);
                   }}
+                  onRevert={(itemIdx) => revertTimelineUpTo(index, itemIdx)}
                 />
               </li>
             ))}

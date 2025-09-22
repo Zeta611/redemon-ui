@@ -1,6 +1,7 @@
 import { create, ExtractState, StoreApi, UseBoundStore } from "zustand";
 import { combine } from "zustand/middleware";
 import sampleSketches from "@/shared/sampleSketches";
+import { updateValueForLabel } from "@/shared/sketch";
 import {
   action,
   action_type,
@@ -17,6 +18,7 @@ import { fromArray } from "@/shared/utils";
 type TimelineInfo = {
   timeline: timeline;
   finalSketch: string;
+  snapshots: string[];
 };
 
 type WithSelectors<S> = S extends { getState: () => infer T }
@@ -59,7 +61,7 @@ export const useAppState = createSelectors(
             chosenSample: sampleName,
             sketch,
             lockedSketch: null,
-            timelines: [{ timeline: [], finalSketch: sketch }],
+            timelines: [{ timeline: [], finalSketch: sketch, snapshots: [] }],
             workingTimelineIdx: 0,
           });
         },
@@ -83,7 +85,13 @@ export const useAppState = createSelectors(
             return {
               sketch: state.lockedSketch,
               lockedSketch: null,
-              timelines: [{ timeline: [], finalSketch: state.lockedSketch }],
+              timelines: [
+                {
+                  timeline: [],
+                  finalSketch: state.lockedSketch,
+                  snapshots: [],
+                },
+              ],
               workingTimelineIdx: 0,
             };
           }),
@@ -111,7 +119,11 @@ export const useAppState = createSelectors(
               sketch: state.lockedSketch,
               timelines: [
                 ...state.timelines,
-                { timeline: [], finalSketch: state.lockedSketch },
+                {
+                  timeline: [],
+                  finalSketch: state.lockedSketch,
+                  snapshots: [],
+                },
               ],
               workingTimelineIdx: state.timelines.length,
             };
@@ -125,7 +137,13 @@ export const useAppState = createSelectors(
 
             let timelines = state.timelines.filter((_, i) => i !== idx);
             if (timelines.length === 0) {
-              timelines = [{ timeline: [], finalSketch: state.lockedSketch }];
+              timelines = [
+                {
+                  timeline: [],
+                  finalSketch: state.lockedSketch,
+                  snapshots: [],
+                },
+              ];
             }
             const workingTimelineIdx =
               state.workingTimelineIdx === idx
@@ -146,7 +164,11 @@ export const useAppState = createSelectors(
           set((state) => ({
             sketch: state.lockedSketch || "",
             timelines: [
-              { timeline: [], finalSketch: state.lockedSketch || "" },
+              {
+                timeline: [],
+                finalSketch: state.lockedSketch || "",
+                snapshots: [],
+              },
             ],
             workingTimelineIdx: 0,
           })),
@@ -161,23 +183,21 @@ export const useAppState = createSelectors(
               console.warn("No working timeline found");
               return state;
             }
+            const workingIdx = state.workingTimelineIdx;
             return {
-              timelines: state.timelines.map(
-                ({ timeline: t, finalSketch: s }, i) => ({
-                  timeline:
-                    i === state.workingTimelineIdx
-                      ? [
-                          ...t,
-                          action({
-                            label: label(hole, null),
-                            action_type,
-                            arg,
-                          }),
-                        ]
-                      : t,
-                  finalSketch: s,
-                }),
-              ),
+              timelines: state.timelines.map((info, i) => {
+                if (i !== workingIdx) return info;
+                const newItem = action({
+                  label: label(hole, null),
+                  action_type,
+                  arg,
+                });
+                return {
+                  timeline: [...info.timeline, newItem],
+                  finalSketch: info.finalSketch,
+                  snapshots: [...info.snapshots, info.finalSketch],
+                };
+              }),
             };
           }),
 
@@ -192,17 +212,53 @@ export const useAppState = createSelectors(
               console.warn("No working timeline found");
               return state;
             }
+            const workingIdx = state.workingTimelineIdx;
+            const nextSketch = getSketch();
             return {
-              timelines: state.timelines.map(
-                ({ timeline: t, finalSketch: s }, i) => ({
-                  timeline:
-                    i === state.workingTimelineIdx
-                      ? [...t, edit(fromArray(path.map(index)), e)]
-                      : t,
-                  finalSketch: i === state.workingTimelineIdx ? getSketch() : s,
-                }),
+              timelines: state.timelines.map((info, i) =>
+                i === workingIdx
+                  ? {
+                      timeline: [
+                        ...info.timeline,
+                        edit(fromArray(path.map(index)), e),
+                      ],
+                      finalSketch: nextSketch,
+                      snapshots: [...info.snapshots, nextSketch],
+                    }
+                  : info,
               ),
             };
+          }),
+
+        revertTimelineUpTo: (timelineIdx: number, itemIdx: number) =>
+          set((state) => {
+            if (
+              timelineIdx < 0 ||
+              timelineIdx >= state.timelines.length ||
+              itemIdx < 0 ||
+              itemIdx >= state.timelines[timelineIdx].timeline.length
+            ) {
+              console.warn("Invalid revert indices", { timelineIdx, itemIdx });
+              return state;
+            }
+            const info = state.timelines[timelineIdx];
+            const newTimeline = info.timeline.slice(0, itemIdx + 1);
+            const newSnapshots = info.snapshots.slice(0, itemIdx + 1);
+            const newFinal = newSnapshots[newSnapshots.length - 1] ?? "";
+            const timelines = state.timelines.map((t, i) =>
+              i === timelineIdx
+                ? {
+                    timeline: newTimeline,
+                    finalSketch: newFinal,
+                    snapshots: newSnapshots,
+                  }
+                : t,
+            );
+            const sketch =
+              state.workingTimelineIdx === timelineIdx
+                ? newFinal
+                : state.sketch;
+            return { timelines, sketch };
           }),
 
         synthesizeWithSketchAndTimelines: async (
