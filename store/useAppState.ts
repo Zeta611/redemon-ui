@@ -1,7 +1,6 @@
 import { create, ExtractState, StoreApi, UseBoundStore } from "zustand";
 import { combine } from "zustand/middleware";
 import sampleSketches from "@/shared/sampleSketches";
-import { updateValueForLabel } from "@/shared/sketch";
 import {
   action,
   action_type,
@@ -201,19 +200,13 @@ export const useAppState = createSelectors(
             };
           }),
 
-        // TODO: replace this ugly getSketch hack
-        addEditToWorkingTimeline: (
-          getSketch: () => string,
-          path: number[],
-          e: edit,
-        ) =>
+        addEditToWorkingTimeline: (path: number[], e: edit) =>
           set((state) => {
             if (state.workingTimelineIdx === null) {
               console.warn("No working timeline found");
               return state;
             }
             const workingIdx = state.workingTimelineIdx;
-            const nextSketch = getSketch();
             return {
               timelines: state.timelines.map((info, i) =>
                 i === workingIdx
@@ -222,8 +215,8 @@ export const useAppState = createSelectors(
                         ...info.timeline,
                         edit(fromArray(path.map(index)), e),
                       ],
-                      finalSketch: nextSketch,
-                      snapshots: [...info.snapshots, nextSketch],
+                      finalSketch: state.sketch,
+                      snapshots: [...info.snapshots, state.sketch],
                     }
                   : info,
               ),

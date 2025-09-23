@@ -258,15 +258,11 @@ let cnt = 0;
 
 function editDecorations(
   view: EditorView,
-  addEditRef: RefObject<
-    (getSketch: () => string, path: number[], edit: edit) => void
-  >,
+  addEditRef: RefObject<(path: number[], edit: edit) => void>,
 ) {
   const widgets: Range<Decoration>[] = [];
   const currentPath: number[] = [];
   let currentIndex: number | null = null;
-
-  const getSketch = () => view.state.doc.toString();
 
   syntaxTree(view.state).iterate({
     enter: (node) => {
@@ -317,17 +313,9 @@ function editDecorations(
               replaceText(view, from, to, value);
               if (value.startsWith("{") && value.endsWith("}")) {
                 value = value.slice(1, -1).trim();
-                addEditRef.current(
-                  getSketch,
-                  path,
-                  constReplace(int(Number(value))),
-                );
+                addEditRef.current(path, constReplace(int(Number(value))));
               } else {
-                addEditRef.current(
-                  getSketch,
-                  path,
-                  constReplace(string(value)),
-                );
+                addEditRef.current(path, constReplace(string(value)));
               }
             }),
             side: 1,
@@ -355,17 +343,9 @@ function editDecorations(
               replaceText(view, from, to, value);
               if (value.startsWith("{") && value.endsWith("}")) {
                 value = value.slice(1, -1).trim();
-                addEditRef.current(
-                  getSketch,
-                  path,
-                  constReplace(int(Number(value))),
-                );
+                addEditRef.current(path, constReplace(int(Number(value))));
               } else {
-                addEditRef.current(
-                  getSketch,
-                  path,
-                  constReplace(string(value)),
-                );
+                addEditRef.current(path, constReplace(string(value)));
               }
             }),
             side: 1,
@@ -388,7 +368,6 @@ function editDecorations(
               (value) => {
                 replaceText(view, from, to, value);
                 addEditRef.current(
-                  getSketch,
                   path,
                   attributeReplace(
                     identifier,
@@ -421,11 +400,7 @@ function editDecorations(
               widget: new NodeEditWidget(++cnt, {
                 onInsert: (node) => {
                   insertNode(view, node, openTag.to);
-                  addEditRef.current(
-                    getSketch,
-                    path,
-                    nodeInsert(index(0), parse(node)),
-                  );
+                  addEditRef.current(path, nodeInsert(index(0), parse(node)));
                 },
               }),
               side: 1,
@@ -437,16 +412,15 @@ function editDecorations(
                 widget: new NodeEditWidget(++cnt, {
                   onCopy: () => {
                     copyNode(view, child.from, child.to);
-                    addEditRef.current(getSketch, path, nodeCopy(index(idx)));
+                    addEditRef.current(path, nodeCopy(index(idx)));
                   },
                   onRemove: () => {
                     removeNode(view, child.from, child.to);
-                    addEditRef.current(getSketch, path, nodeDelete(index(idx)));
+                    addEditRef.current(path, nodeDelete(index(idx)));
                   },
                   onInsert: (node) => {
                     insertNode(view, node, child.to);
                     addEditRef.current(
-                      getSketch,
                       path,
                       nodeInsert(index(idx), parse(node)),
                     );
@@ -469,9 +443,7 @@ function editDecorations(
 }
 
 function editPlugin(
-  addEditRef: RefObject<
-    (getSketch: () => string, path: number[], edit: edit) => void
-  >,
+  addEditRef: RefObject<(path: number[], edit: edit) => void>,
 ) {
   console.debug("Creating edit plugin");
   return ViewPlugin.fromClass(
