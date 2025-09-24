@@ -21,7 +21,7 @@ export async function POST(req: Request) {
     );
   }
 
-  const activeApiKey = apiKey || GEMINI_API_KEY;
+  const activeApiKey = apiKey ?? GEMINI_API_KEY ?? "";
   if (!activeApiKey) {
     return NextResponse.json(
       { error: "Please provide an API key in the request." },
@@ -37,7 +37,7 @@ export async function POST(req: Request) {
     config: { systemInstruction },
   });
 
-  if (response && response.text) {
+  if (response?.text) {
     return NextResponse.json({ code: response.text });
   } else {
     return NextResponse.json(
