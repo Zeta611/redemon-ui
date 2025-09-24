@@ -24,12 +24,12 @@ import {
   string,
 } from "./lang.gen";
 
-const submitButtonClass = tw`rounded bg-orange-200 p-0.5 text-orange-900 shadow-xs/75 inset-shadow-2xs/90 inset-shadow-white hover:bg-orange-300`;
+const submitButtonClass = tw`rounded bg-orange-200 p-0.5 mx-0.5 text-orange-900 shadow-xs/75 inset-shadow-2xs/90 inset-shadow-white hover:bg-orange-300`;
 const removeButtonClass = tw`rounded bg-red-300 p-0.5 text-red-900 shadow-xs/75 inset-shadow-2xs/90 inset-shadow-white hover:bg-red-400`;
 const copyButtonClass = tw`rounded bg-emerald-300 p-0.5 text-emerald-900 shadow-xs/75 inset-shadow-2xs/90 inset-shadow-white hover:bg-emerald-400`;
 const insertButtonClass = tw`rounded bg-amber-300 p-0.5 text-amber-900 shadow-xs/75 inset-shadow-2xs/90 inset-shadow-white hover:bg-amber-400`;
 
-const textAreaClass = tw`z-0 h-4 resize overflow-hidden rounded bg-orange-100 px-1 text-black hover:bg-orange-200 focus:bg-orange-200 focus:outline-1 focus:outline-orange-500`;
+const textAreaClass = tw`z-0 h-fit break-all rounded bg-orange-100 px-1 text-black hover:bg-orange-200 focus:bg-orange-200 outline-0 border border-transparent focus:border-orange-500`;
 const insertAreaClass = tw`z-0 field-sizing-content h-20 w-sm resize overflow-hidden rounded bg-amber-100 px-1 text-black hover:bg-amber-400 focus:bg-amber-200 focus:outline-1 focus:outline-amber-500`;
 
 class TextReplaceWidget extends WidgetType {
@@ -48,9 +48,8 @@ class TextReplaceWidget extends WidgetType {
   toDOM() {
     const wrap = document.createElement("span");
     wrap.setAttribute("aria-hidden", "true");
-    wrap.className = tw`inline-flex items-center gap-0.5 pl-1`;
 
-    const textarea = wrap.appendChild(document.createElement("div"));
+    const textarea = wrap.appendChild(document.createElement("span"));
     textarea.className = textAreaClass;
     textarea.setAttribute("contenteditable", "plaintext-only");
     textarea.textContent = this.value;
@@ -70,14 +69,14 @@ class TextReplaceWidget extends WidgetType {
   }
 }
 
-class AttributeReplaceWidget extends WidgetType {
+class AttributeReplaceWidget extends TextReplaceWidget {
   constructor(
-    readonly id: number,
+    id: number,
     readonly identifier: string,
-    readonly value: string,
-    readonly onSubmit: (value: string) => void,
+    value: string,
+    onSubmit: (value: string) => void,
   ) {
-    super();
+    super(id, value, onSubmit);
   }
 
   eq(other: AttributeReplaceWidget) {
@@ -85,26 +84,7 @@ class AttributeReplaceWidget extends WidgetType {
   }
 
   toDOM() {
-    const wrap = document.createElement("span");
-    wrap.setAttribute("aria-hidden", "true");
-    wrap.className = tw`inline-flex items-center gap-0.5 px-0.5`;
-
-    const textarea = wrap.appendChild(document.createElement("div"));
-    textarea.className = textAreaClass;
-    textarea.setAttribute("contenteditable", "plaintext-only");
-    textarea.textContent = this.value;
-
-    const submitButton = wrap.appendChild(document.createElement("button"));
-    submitButton.className = submitButtonClass;
-    submitButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="10.5" height="10.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check-icon lucide-check"><path d="M20 6 9 17l-5-5"/></svg>`;
-    submitButton.onclick = () => {
-      const value = textarea.textContent?.trim();
-      if (value) {
-        this.onSubmit(value);
-      }
-    };
-
-    return wrap;
+    return super.toDOM();
   }
 }
 

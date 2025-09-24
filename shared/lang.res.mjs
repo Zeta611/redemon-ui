@@ -969,10 +969,6 @@ function _synthesize(prim0, prim1) {
   return LangBcJs.synthesize(prim0, prim1);
 }
 
-function _prompts(prim0, prim1) {
-  return LangBcJs.prompts(prim0, prim1);
-}
-
 function _extractParams(prim0, prim1) {
   return LangBcJs.extractParams(prim0, prim1);
 }
@@ -980,7 +976,6 @@ function _extractParams(prim0, prim1) {
 function synthesize(prog, steps_array) {
   let steps = JSON.stringify(steps_array.map(steps => steps.map(demo_step_encode)));
   console.debug("Stringified steps:", steps);
-  console.debug("Prompts:", LangBcJs.prompts(prog, steps));
   return LangBcJs.synthesize(prog, steps);
 }
 
@@ -1031,7 +1026,6 @@ export {
   _parse,
   parse,
   _synthesize,
-  _prompts,
   _extractParams,
   synthesize,
   extractParams,
