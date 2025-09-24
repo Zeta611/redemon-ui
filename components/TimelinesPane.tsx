@@ -23,6 +23,8 @@ export default function TimelinesPane() {
 
   const locked = lockedSketch !== null;
 
+  // console.info(JSON.stringify(timelines, null, 2));
+
   return (
     <div className={cn("h-full", locked || "cursor-not-allowed")}>
       <div

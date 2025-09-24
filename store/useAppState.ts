@@ -1,6 +1,6 @@
 import { create, ExtractState, StoreApi, UseBoundStore } from "zustand";
 import { combine } from "zustand/middleware";
-import sampleSketches from "@/shared/sampleSketches";
+import samples from "@/shared/samples";
 import {
   action,
   action_type,
@@ -9,16 +9,10 @@ import {
   index,
   label,
   synthesize,
-  timeline,
   timelineToDemoSteps,
 } from "@/shared/lang.gen";
 import { fromArray } from "@/shared/utils";
-
-type TimelineInfo = {
-  timeline: timeline;
-  finalSketch: string;
-  snapshots: string[];
-};
+import { TimelineInfo } from "@/shared/types";
 
 type WithSelectors<S> = S extends { getState: () => infer T }
   ? S & { use: { [K in keyof T]: () => T[K] } }
@@ -37,7 +31,6 @@ const createSelectors = <S extends UseBoundStore<StoreApi<object>>>(
   return store;
 };
 
-// NOTE: I may need to consult https://zustand.docs.pmnd.rs/guides/nextjs if I hit any issues.
 export type AppState = ExtractState<typeof useAppState>;
 
 export const useAppState = createSelectors(
@@ -55,13 +48,15 @@ export const useAppState = createSelectors(
 
       (set, get) => ({
         chooseSample: (sampleName: string | null) => {
-          const sketch = sampleName ? sampleSketches.get(sampleName) || "" : "";
+          const [sketch, timelines] = sampleName
+            ? (samples.get(sampleName) ?? ["", []])
+            : ["", []];
           set({
             chosenSample: sampleName,
             sketch,
             lockedSketch: null,
-            timelines: [{ timeline: [], finalSketch: sketch, snapshots: [] }],
-            workingTimelineIdx: 0,
+            timelines,
+            workingTimelineIdx: null,
           });
         },
 
@@ -84,13 +79,7 @@ export const useAppState = createSelectors(
             return {
               sketch: state.lockedSketch,
               lockedSketch: null,
-              timelines: [
-                {
-                  timeline: [],
-                  finalSketch: state.lockedSketch,
-                  snapshots: [],
-                },
-              ],
+              timelines: [{ timeline: [], snapshots: [] }],
               workingTimelineIdx: 0,
             };
           }),
@@ -100,12 +89,15 @@ export const useAppState = createSelectors(
             if (idx === null || idx >= state.timelines.length) {
               return {
                 workingTimelineIdx: null,
-                sketch: state.lockedSketch || "",
+                sketch: state.lockedSketch ?? "",
               };
             }
             return {
               workingTimelineIdx: idx,
-              sketch: state.timelines[idx].finalSketch,
+              sketch:
+                state.timelines[idx].snapshots.at(-1) ??
+                state.lockedSketch ??
+                "",
             };
           }),
         addTimeline: () =>
@@ -116,14 +108,7 @@ export const useAppState = createSelectors(
             }
             return {
               sketch: state.lockedSketch,
-              timelines: [
-                ...state.timelines,
-                {
-                  timeline: [],
-                  finalSketch: state.lockedSketch,
-                  snapshots: [],
-                },
-              ],
+              timelines: [...state.timelines, { timeline: [], snapshots: [] }],
               workingTimelineIdx: state.timelines.length,
             };
           }),
@@ -136,23 +121,23 @@ export const useAppState = createSelectors(
 
             let timelines = state.timelines.filter((_, i) => i !== idx);
             if (timelines.length === 0) {
-              timelines = [
-                {
-                  timeline: [],
-                  finalSketch: state.lockedSketch,
-                  snapshots: [],
-                },
-              ];
+              timelines = [{ timeline: [], snapshots: [] }];
             }
             const workingTimelineIdx =
-              state.workingTimelineIdx === idx
+              state.workingTimelineIdx === null
                 ? null
-                : state.workingTimelineIdx;
-            console.debug("Working timeline index:", workingTimelineIdx);
+                : state.workingTimelineIdx >= idx
+                  ? state.workingTimelineIdx === 0
+                    ? null
+                    : state.workingTimelineIdx - 1
+                  : state.workingTimelineIdx;
+
             const sketch =
               workingTimelineIdx === null
                 ? state.lockedSketch
-                : timelines[workingTimelineIdx].finalSketch;
+                : (timelines[workingTimelineIdx].snapshots.at(-1) ??
+                  state.lockedSketch ??
+                  "");
             return {
               sketch,
               timelines,
@@ -161,14 +146,8 @@ export const useAppState = createSelectors(
           }),
         resetTimelines: () =>
           set((state) => ({
-            sketch: state.lockedSketch || "",
-            timelines: [
-              {
-                timeline: [],
-                finalSketch: state.lockedSketch || "",
-                snapshots: [],
-              },
-            ],
+            sketch: state.lockedSketch ?? "",
+            timelines: [{ timeline: [], snapshots: [] }],
             workingTimelineIdx: 0,
           })),
 
@@ -193,8 +172,10 @@ export const useAppState = createSelectors(
                 });
                 return {
                   timeline: [...info.timeline, newItem],
-                  finalSketch: info.finalSketch,
-                  snapshots: [...info.snapshots, info.finalSketch],
+                  snapshots: [
+                    ...info.snapshots,
+                    info.snapshots.at(-1) ?? state.sketch,
+                  ],
                 };
               }),
             };
@@ -215,7 +196,6 @@ export const useAppState = createSelectors(
                         ...info.timeline,
                         edit(fromArray(path.map(index)), e),
                       ],
-                      finalSketch: state.sketch,
                       snapshots: [...info.snapshots, state.sketch],
                     }
                   : info,
@@ -237,19 +217,17 @@ export const useAppState = createSelectors(
             const info = state.timelines[timelineIdx];
             const newTimeline = info.timeline.slice(0, itemIdx + 1);
             const newSnapshots = info.snapshots.slice(0, itemIdx + 1);
-            const newFinal = newSnapshots[newSnapshots.length - 1] ?? "";
             const timelines = state.timelines.map((t, i) =>
               i === timelineIdx
                 ? {
                     timeline: newTimeline,
-                    finalSketch: newFinal,
                     snapshots: newSnapshots,
                   }
                 : t,
             );
             const sketch =
               state.workingTimelineIdx === timelineIdx
-                ? newFinal
+                ? (newSnapshots.at(-1) ?? state.sketch)
                 : state.sketch;
             return { timelines, sketch };
           }),
@@ -308,7 +286,7 @@ export const useAppState = createSelectors(
                   method: "POST",
                   headers: {
                     "Content-Type": "application/json",
-                    "x-gemini-api-key": apiKey || "",
+                    "x-gemini-api-key": apiKey ?? "",
                   },
                   body: JSON.stringify({ skeleton: params.code! }),
                 });
@@ -344,7 +322,7 @@ export const useAppState = createSelectors(
                   method: "POST",
                   headers: {
                     "Content-Type": "application/json",
-                    "x-gemini-api-key": apiKey || "",
+                    "x-gemini-api-key": apiKey ?? "",
                   },
                   body: JSON.stringify({ skeleton: params.code! }),
                 });
