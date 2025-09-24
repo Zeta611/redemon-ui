@@ -180,29 +180,37 @@ class NodeEditWidget extends WidgetType {
       insertButton.setAttribute("title", "Insert new element");
       insertButton.onclick = () => {
         insertLine.classList.toggle("hidden");
+        insertArea.textContent = "<span>New Element</span>";
+        insertArea.focus();
+        const range = document.createRange();
+        range.selectNodeContents(insertArea);
+        const sel = window.getSelection();
+        sel?.removeAllRanges();
+        sel?.addRange(range);
       };
 
       const insertLine = wrap.appendChild(document.createElement("div"));
       insertLine.className = tw`flex hidden items-end gap-1`;
       const insertArea = insertLine.appendChild(
-        document.createElement("textarea"),
+        document.createElement("span"),
       );
-      insertArea.className = insertAreaClass;
-      insertArea.placeholder = "Insert new element here";
+      insertArea.className = textAreaClass;
+      insertArea.setAttribute("contenteditable", "plaintext-only");
+
       const submitInsert = insertLine.appendChild(
         document.createElement("button"),
       );
       submitInsert.className = submitButtonClass;
       submitInsert.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="10.5" height="10.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check-icon lucide-check"><path d="M20 6 9 17l-5-5"/></svg>`;
-      submitInsert.onclick = () => {
-        const value = insertArea.value.trim();
+      submitInsert.addEventListener("click", () => {
+        const value = insertArea.textContent?.trim() ?? "";
         if (value) {
           // TS is dumb...
           this.onInsert!(value);
-          insertArea.value = "";
-          insertLine.classList.add("hidden");
         }
-      };
+        insertArea.textContent = "";
+        insertLine.classList.add("hidden");
+      });
     }
 
     return wrap;
