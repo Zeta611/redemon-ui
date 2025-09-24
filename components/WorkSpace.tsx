@@ -18,11 +18,11 @@ export default function WorkSpace() {
     <ResizablePanelGroup direction="vertical">
       <ResizablePanel defaultSize={75}>
         <ResizablePanelGroup direction="horizontal">
-          <ResizablePanel>
+          <ResizablePanel defaultSize={50}>
             <SketchPane />
           </ResizablePanel>
           <ResizableHandle withHandle />
-          <ResizablePanel>
+          <ResizablePanel defaultSize={50}>
             <SynthPane />
           </ResizablePanel>
         </ResizablePanelGroup>
