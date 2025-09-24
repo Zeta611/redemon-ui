@@ -25,11 +25,12 @@ import {
 } from "./lang.gen";
 
 const submitButtonClass = tw`rounded bg-orange-200 p-0.5 mx-0.5 text-orange-900 shadow-xs/75 inset-shadow-2xs/90 inset-shadow-white hover:bg-orange-300`;
+const submitButtonDisabledClass = tw`hidden`;
 const removeButtonClass = tw`rounded bg-red-300 p-0.5 text-red-900 shadow-xs/75 inset-shadow-2xs/90 inset-shadow-white hover:bg-red-400`;
 const copyButtonClass = tw`rounded bg-emerald-300 p-0.5 text-emerald-900 shadow-xs/75 inset-shadow-2xs/90 inset-shadow-white hover:bg-emerald-400`;
 const insertButtonClass = tw`rounded bg-amber-300 p-0.5 text-amber-900 shadow-xs/75 inset-shadow-2xs/90 inset-shadow-white hover:bg-amber-400`;
 
-const textAreaClass = tw`z-0 h-fit break-all rounded bg-orange-100 px-1 text-black hover:bg-orange-200 focus:bg-orange-200 outline-0 border border-transparent focus:border-orange-500`;
+const textAreaClass = tw`z-0 leading-relaxed break-all rounded bg-orange-100 px-1 text-black hover:bg-orange-200 focus:bg-orange-200 outline-0 border border-transparent focus:border-orange-500`;
 const insertAreaClass = tw`z-0 field-sizing-content h-20 w-sm resize overflow-hidden rounded bg-amber-100 px-1 text-black hover:bg-amber-400 focus:bg-amber-200 focus:outline-1 focus:outline-amber-500`;
 
 class TextReplaceWidget extends WidgetType {
@@ -55,13 +56,32 @@ class TextReplaceWidget extends WidgetType {
     textarea.textContent = this.value;
 
     const submitButton = wrap.appendChild(document.createElement("button"));
-    submitButton.className = submitButtonClass;
+    submitButton.className = submitButtonDisabledClass;
     submitButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="10.5" height="10.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check-icon lucide-check"><path d="M20 6 9 17l-5-5"/></svg>`;
-    submitButton.onclick = () => {
+
+    submitButton.addEventListener("mousedown", (e) => {
+      // prevent textarea blur
+      e.preventDefault();
+    });
+    submitButton.addEventListener("click", () => {
+      // force submit
       const value = textarea.textContent?.trim() ?? "";
       console.debug("Submitting value:", value);
       this.onSubmit(value);
-    };
+      submitButton.className = submitButtonDisabledClass;
+    });
+    textarea.addEventListener("focus", () => {
+      submitButton.className = submitButtonClass;
+    });
+    textarea.addEventListener("blur", () => {
+      // submit only if changed
+      const value = textarea.textContent?.trim() ?? "";
+      if (value !== this.value) {
+        console.debug("Submitting value:", value);
+        this.onSubmit(value);
+      }
+      submitButton.className = submitButtonDisabledClass;
+    });
 
     return wrap;
   }

@@ -57,20 +57,27 @@ export default function SketchPane() {
     ].concat(locked ? [editPlugin(addEditRef)] : []);
   }, [locked, addEditRef]);
 
-  const currentInputRef = useRef<[number, string]>([0, ""]);
-  const submitInput = () => {
-    const [label, value] = currentInputRef.current;
+  const handleLiveClick = (label: number) => () => {
+    addActionToWorkingTimeline(label, "Click");
+  }
+  const handleLiveChange = (label: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
     addActionToWorkingTimeline(label, "Input", value);
-    currentInputRef.current = [0, ""];
+  }
+  /*
+  // TODO: update sketch AND add edit on blur (almost impossible without ast)
+  const handleInputBlur = (label: number) => (e: React.FocusEvent<HTMLInputElement>) => {
+    const value = e.target.value;
     setSketch(updateValueForLabel(sketch, label, value));
-  };
+  }
+  */
 
   const [verticalMode, setVerticalMode] = useState(true);
 
   return (
     <LiveProvider
       code={preprocessSketch(sketch)}
-      scope={{ addActionToWorkingTimeline, setSketch, currentInputRef }}
+      scope={{ handleLiveClick, handleLiveChange /* , handleInputBlur */ }}
     >
       <ResizablePanelGroup direction={verticalMode ? "vertical" : "horizontal"}>
         <ResizablePanel defaultSize={60} minSize={30}>
@@ -174,15 +181,6 @@ export default function SketchPane() {
             >
               <LivePreview />
             </root.div>
-            {locked && (
-              <Button
-                size="icon"
-                className="size-6 rounded bg-orange-200 text-orange-900 shadow-sm/75 inset-shadow-xs/90 inset-shadow-white hover:bg-orange-300"
-                onClick={submitInput}
-              >
-                💬
-              </Button>
-            )}
           </div>
         </ResizablePanel>
       </ResizablePanelGroup>

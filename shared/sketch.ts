@@ -7,11 +7,15 @@ export function preprocessSketch(sketch: string) {
   return sketch
     .replaceAll(
       /(?<=onClick\s*=\s*{\s*)\$(\d*)(?=\s*})/g,
-      "() => { addActionToWorkingTimeline($1, 'Click'); }",
+      "handleLiveClick($1)",
     )
     .replaceAll(
-      /(?<=onChange\s*=\s*{\s*)\$(\d*)(?=\s*})/g,
-      "(e) => { currentInputRef.current = [$1, e.target.value]; }",
+      /onChange\s*=\s*{\s*\$(\d*)\s*}/g,
+      /*
+      // TODO: see `handleInputBlur` in components/SketchPane.tsx
+      "onChange={handleLiveChange($1)} onBlur={handleInputBlur($1)}",
+      */
+      "onChange={handleLiveChange($1)}",
     )
     .replaceAll(/\bvalue=/g, "defaultValue=");
 }
