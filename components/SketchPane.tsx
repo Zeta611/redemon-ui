@@ -15,7 +15,7 @@ import { editPlugin } from "@/shared/sketch-plugin";
 import { Separator } from "@/ui/separator";
 import { Button } from "@/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/ui/tooltip";
-import { format, preprocessSketch, updateValueForLabel } from "@/shared/sketch";
+import { format, preprocessSketch } from "@/shared/sketch";
 import { Switch } from "@/ui/switch";
 import { Label } from "@/ui/label";
 import { cn } from "@/shared/utils";
@@ -59,11 +59,12 @@ export default function SketchPane() {
 
   const handleLiveClick = (label: number) => () => {
     addActionToWorkingTimeline(label, "Click");
-  }
-  const handleLiveChange = (label: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    addActionToWorkingTimeline(label, "Input", value);
-  }
+  };
+  const handleLiveChange =
+    (label: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      addActionToWorkingTimeline(label, "Input", value);
+    };
   /*
   // TODO: update sketch AND add edit on blur (almost impossible without ast)
   const handleInputBlur = (label: number) => (e: React.FocusEvent<HTMLInputElement>) => {
