@@ -8,7 +8,9 @@ import {
   extractParams,
   index,
   label,
+  path,
   synthesize,
+  timeline,
   timelineToDemoSteps,
 } from "@/shared/lang.gen";
 import { fromArray } from "@/shared/utils";
@@ -30,6 +32,45 @@ const createSelectors = <S extends UseBoundStore<StoreApi<object>>>(
 
   return store;
 };
+
+function eq<T>(x: T, y: T): boolean {
+  return JSON.stringify(x) === JSON.stringify(y);
+}
+
+// Append an edit to the timeline, merging with the last edit if possible.
+function appendEdit(t: timeline, p: path, e: edit): timeline {
+  if (t.length !== 0) {
+    const last = t[t.length - 1];
+    if (
+      last.TAG === "Edit" &&
+      eq(last._0, p) &&
+      last._1.TAG === "ConstReplace" &&
+      e.TAG === "ConstReplace"
+    ) {
+      return [...t.slice(0, -1), edit(p, e)];
+    }
+  }
+  return [...t, edit(p, e)];
+}
+
+// Append an action to the timeline, merging with the last action if possible.
+function appendAction(t: timeline, a: action): timeline {
+  if (t.length !== 0) {
+    const last = t[t.length - 1];
+    if (
+      last.TAG === "Action" &&
+      eq(last._0.label, a.label) &&
+      last._0.action_type === "Input" &&
+      a.action_type === "Input"
+    ) {
+      return [
+        ...t.slice(0, -1),
+        action({ label: a.label, action_type: "Input", arg: a.arg }),
+      ];
+    }
+  }
+  return [...t, action(a)];
+}
 
 export type AppState = ExtractState<typeof useAppState>;
 
@@ -165,13 +206,13 @@ export const useAppState = createSelectors(
             return {
               timelines: state.timelines.map((info, i) => {
                 if (i !== workingIdx) return info;
-                const newItem = action({
+                const action = {
                   label: label(hole, null),
                   action_type,
                   arg,
-                });
+                };
                 return {
-                  timeline: [...info.timeline, newItem],
+                  timeline: appendAction(info.timeline, action),
                   snapshots: [
                     ...info.snapshots,
                     info.snapshots.at(-1) ?? state.sketch,
@@ -192,10 +233,11 @@ export const useAppState = createSelectors(
               timelines: state.timelines.map((info, i) =>
                 i === workingIdx
                   ? {
-                      timeline: [
-                        ...info.timeline,
-                        edit(fromArray(path.map(index)), e),
-                      ],
+                      timeline: appendEdit(
+                        info.timeline,
+                        fromArray(path.map(index)),
+                        e,
+                      ),
                       snapshots: [...info.snapshots, state.sketch],
                     }
                   : info,
