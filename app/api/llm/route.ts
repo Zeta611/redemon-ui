@@ -21,7 +21,8 @@ export async function POST(req: Request) {
     );
   }
 
-  const activeApiKey = apiKey || GEMINI_API_KEY;
+  const activeApiKey =
+    (apiKey === null || apiKey === "" ? GEMINI_API_KEY : "") ?? "";
   if (!activeApiKey) {
     return NextResponse.json(
       { error: "Please provide an API key in the request." },
