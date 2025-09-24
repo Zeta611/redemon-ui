@@ -36,9 +36,10 @@ export async function POST(req: Request) {
     contents: skeleton,
     config: { systemInstruction },
   });
+  const text = response.text ?? "";
 
-  if (response?.text) {
-    return NextResponse.json({ code: response.text });
+  if (text !== "") {
+    return NextResponse.json({ code: text });
   } else {
     return NextResponse.json(
       { error: "Failed to generate response" },
