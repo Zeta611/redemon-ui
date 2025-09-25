@@ -51,14 +51,21 @@ export default function Home() {
           <div className="grid gap-4">
             <div className="grid gap-3">
               <Label htmlFor="api-key">Google API Key</Label>
-              <Input id="api-key" name="api-key" placeholder="AIza..." />
+              <Input
+                id="api-key"
+                name="api-key"
+                placeholder="AIza..."
+                defaultValue={apiKey ?? ""}
+              />
             </div>
           </div>
           <DialogFooter>
             <DialogClose asChild>
               <Button variant="outline">Cancel</Button>
             </DialogClose>
-            <Button type="submit">Save</Button>
+            <DialogClose asChild>
+              <Button type="submit">Save</Button>
+            </DialogClose>
           </DialogFooter>
         </form>
       </DialogContent>
