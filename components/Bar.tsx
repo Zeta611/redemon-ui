@@ -12,6 +12,7 @@ import {
   MenubarSubTrigger,
   MenubarTrigger,
 } from "@/ui/menubar";
+import GitHub from "@/components/icons/github";
 import { DialogTrigger } from "@/ui/dialog";
 import { useAppState } from "@/store/useAppState";
 
@@ -61,6 +62,9 @@ export default function Bar() {
             </MenubarContent>
           </MenubarMenu>
         </Menubar>
+        <Link href="https://github.com/Zeta611/redemon-ui">
+          <GitHub className="size-5 rounded-full bg-white" />
+        </Link>
       </div>
     </div>
   );
